@@ -1,0 +1,19 @@
+.borrow-history {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f6f9ff;
+}
+
+.badge {
+  font-size: 0.9rem;
+  border-radius: 10px;
+}
