@@ -9,7 +9,6 @@ const {
 
 const router = express.Router();
 
-// === BORROW RECORDS (TheoDoiMuonSach) ===
 router.get("/", getAll);
 router.get("/:id", getById);
 router.post("/", create);
