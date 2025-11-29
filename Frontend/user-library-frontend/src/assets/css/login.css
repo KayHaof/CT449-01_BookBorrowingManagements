@@ -1,0 +1,162 @@
+/* Khung nền */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eef2ff, #f8f9ff);
+  padding: 2rem;
+}
+
+/* Card login */
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  padding: 2.5rem 2.2rem;
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  animation: fadeIn 0.4s ease;
+}
+
+/* Title */
+.auth-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  color: #1f2937;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1rem;
+  margin-top: 4px;
+}
+
+/* Label */
+.auth-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+/* Input chung */
+.auth-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 2px solid #e5e7eb;
+  font-size: 0.95rem;
+  transition: 0.25s;
+}
+
+.auth-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  outline: none;
+}
+
+/* Input group (mắt mật khẩu) */
+.auth-input-group {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+/* Nút login */
+.auth-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.8rem;
+  border-radius: 12px;
+  border: none;
+  font-size: 1rem;
+  transition: 0.25s;
+  margin-top: 4px;
+}
+
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(99, 102, 241, 0.25);
+}
+
+/* Divider */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.6rem 0;
+}
+
+.auth-divider span {
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  color: #9ca3af;
+  background: #fff;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+/* Google login */
+.auth-btn-outline {
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: 2px solid #d1d5db;
+  background: #fff;
+  font-weight: 600;
+  color: #374151;
+  transition: 0.25s;
+}
+
+.auth-btn-outline:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+/* Footer */
+.auth-footer {
+  text-align: center;
+  font-size: 0.95rem;
+  margin-top: 1.5rem;
+  color: #6b7280;
+}
+
+.auth-footer a {
+  color: #6366f1;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  color: #4f46e5;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

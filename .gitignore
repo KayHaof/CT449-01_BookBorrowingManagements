@@ -1,0 +1,11 @@
+.vscode/
+
+#Frontend
+/Frontend/admin-library-frontend/node_modules
+/Frontend/user-library-frontend/node_modules
+/Frontend/.env
+
+#Backend
+/Backend/node_modules
+/Backend/.env
+
