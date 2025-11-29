@@ -1,35 +1,13 @@
 <template>
-  <div id="app">
-    <!-- Toàn bộ UI sẽ được load qua layout -->
-    <router-view />
-
-    <!-- Global notification -->
-    <ToastNotification :notification="notification" />
-  </div>
+  <router-view />
+  <Toast ref="toast" />
 </template>
 
 <script setup>
 import { ref, provide } from 'vue'
-import ToastNotification from '@/components/ToastNotification.vue'
+import Toast from '@/components/Shared/Toast.vue'
 
-// State notification dùng toàn app
-const notification = ref({ message: '', type: 'success' })
+const toast = ref(null)
 
-// Hàm hiển thị thông báo global
-const showNotification = (message, type = 'success') => {
-  notification.value = { message, type }
-
-  setTimeout(() => {
-    notification.value = { message: '', type: 'success' }
-  }, 2500)
-}
-
-// Cho tất cả component con sử dụng
-provide('showNotification', showNotification)
+provide('toast', toast)
 </script>
-
-<style>
-#app {
-  min-height: 100vh;
-}
-</style>

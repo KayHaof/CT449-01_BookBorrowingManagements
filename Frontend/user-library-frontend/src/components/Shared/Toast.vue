@@ -77,12 +77,13 @@ defineExpose({
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 9999;
+  opacity: 1 !important;
+  z-index: 9999999;
   pointer-events: none;
 }
 
 .toast-item {
-  background: white;
+  background: #ffffff !important;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   margin-bottom: 12px;

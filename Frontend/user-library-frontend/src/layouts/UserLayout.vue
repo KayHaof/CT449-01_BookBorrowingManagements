@@ -1,8 +1,6 @@
 <template>
   <div>
     <Navbar />
-    <Toast /> 
-
     <main class="container my-5">
       <router-view />
     </main>

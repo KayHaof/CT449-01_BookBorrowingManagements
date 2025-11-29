@@ -37,13 +37,13 @@
               <a href="#" class="text-white-50 text-decoration-none footer-link">Trang chủ</a>
             </li>
             <li class="mb-2">
-              <a href="#" class="text-white-50 text-decoration-none footer-link">Danh sách sách</a>
+              <a href="/books" class="text-white-50 text-decoration-none footer-link">Danh sách sách</a>
             </li>
             <li class="mb-2">
-              <a href="#" class="text-white-50 text-decoration-none footer-link">Lịch sử mượn</a>
+              <a href="/borrow-history" class="text-white-50 text-decoration-none footer-link">Lịch sử mượn</a>
             </li>
             <li class="mb-2">
-              <a href="#" class="text-white-50 text-decoration-none footer-link">Hồ sơ cá nhân</a>
+              <a href="/profile" class="text-white-50 text-decoration-none footer-link">Hồ sơ cá nhân</a>
             </li>
           </ul>
         </div>
@@ -83,11 +83,11 @@
             </div>
             <div class="d-flex align-items-start text-white-50 small mb-2">
               <i class="bi bi-envelope-fill me-2 mt-1"></i>
-              <span>info@bookhub.vn</span>
+              <span>OnlineLibrarySystem.vn</span>
             </div>
             <div class="d-flex align-items-start text-white-50 small">
               <i class="bi bi-geo-alt-fill me-2 mt-1"></i>
-              <span>123 Đường ABC, TP. Hồ Chí Minh</span>
+              <span>Đ. 3/2, phường Xuân Khánh, TP. Cần Thơ</span>
             </div>
           </div>
         </div>

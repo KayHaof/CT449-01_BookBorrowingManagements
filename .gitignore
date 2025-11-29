@@ -8,4 +8,5 @@
 #Backend
 /Backend/node_modules
 /Backend/.env
-
+/Backend/assets/
+/Backend/data/

@@ -2,38 +2,30 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
-
-const authRoutes = require("./routes/auth");
-const homeRoutes = require("./routes/home");
-const authorRoutes = require("./routes/authors");
-const bookRoutes = require("./routes/books");
-const borrowRoutes = require("./routes/borrows");
-const categoryRoutes = require("./routes/categories");
-const fineRoutes = require("./routes/fines");
-const publisherRoutes = require("./routes/publishers");
-const readerRoutes = require("./routes/readers");
-const staffRoutes = require("./routes/staffs");
-const userRoutes = require("./routes/users");
+const path = require("path");
 
 dotenv.config();
 connectDB();
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use("/", homeRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/authors", authorRoutes);
-app.use("/api/books", bookRoutes);
-app.use("/api/borrows", borrowRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/fines", fineRoutes);
-app.use("/api/publishers", publisherRoutes);
-app.use("/api/readers", readerRoutes);
-app.use("/api/staffs", staffRoutes);
-app.use("/api/users", userRoutes);
+app.use("/assets", express.static(path.join(__dirname, "assets")));
 
-const PORT = process.env.PORT || 5000;
+// Routes
+app.use("/", require("./routes/home"));
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/authors", require("./routes/authors"));
+app.use("/api/books", require("./routes/books"));
+app.use("/api/borrows", require("./routes/borrows"));
+app.use("/api/categories", require("./routes/categories"));
+app.use("/api/fines", require("./routes/fines"));
+app.use("/api/publishers", require("./routes/publishers"));
+app.use("/api/readers", require("./routes/readers"));
+app.use("/api/staffs", require("./routes/staffs"));
+app.use("/api/users", require("./routes/users"));
+
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`=> Server running on port ${PORT}`));

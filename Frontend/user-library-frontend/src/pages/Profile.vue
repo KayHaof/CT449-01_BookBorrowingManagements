@@ -4,26 +4,24 @@
     <div class="profile-header gradient-bg-purple pb-5">
       <div class="container pt-4">
         <div class="row align-items-end g-4">
-          <!-- User name -->
           <div class="col-md">
             <h1 class="display-5 text-white fw-bold mb-2">{{ docGia?.hoLot }} {{ docGia?.ten }}</h1>
 
             <p class="text-white-50 fs-5 mb-1">Độc giả • Thành viên từ {{ memberSince }}</p>
 
             <div class="d-flex gap-3 mt-3">
-              <span class="badge bg-light text-dark fs-6">
+              <span class="badge bg-info text-dark fs-6">
                 {{ stats.dangMuon }} sách đang mượn
               </span>
-              <span class="badge bg-light text-dark fs-6"> {{ stats.chuaTra }} sách chưa trả </span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Main -->
+    <!-- MAIN -->
     <div class="container my-5 flex-grow-1">
-      <!-- Tabs -->
+      <!-- TABS -->
       <ul class="nav nav-tabs mb-4 border-bottom-2">
         <li class="nav-item">
           <button
@@ -32,16 +30,6 @@
             data-bs-target="#personal-info"
           >
             <i class="fa-solid fa-user me-2"></i>Thông tin cá nhân
-          </button>
-        </li>
-
-        <li class="nav-item">
-          <button
-            class="nav-link fw-bold text-purple"
-            data-bs-toggle="tab"
-            data-bs-target="#borrowing-history"
-          >
-            <i class="fa-solid fa-book-open me-2"></i>Lịch sử mượn
           </button>
         </li>
 
@@ -60,12 +48,13 @@
         <!-- PERSONAL INFO -->
         <div class="tab-pane fade show active" id="personal-info">
           <div class="row g-4">
-            <!-- LEFT -->
+            <!-- LEFT: PROFILE DETAILS -->
             <div class="col-lg-6">
               <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-light border-bottom">
                   <h5 class="mb-0 text-purple fw-bold">
-                    <i class="fa-solid fa-circle-info me-2"></i>Thông tin cá nhân
+                    <i class="fa-solid fa-circle-info me-2"></i>
+                    Thông tin cá nhân
                   </h5>
                 </div>
 
@@ -75,7 +64,6 @@
                       <label class="small text-muted fw-bold">Họ lót</label>
                       <p class="fs-6">{{ docGia.hoLot }}</p>
                     </div>
-
                     <div class="col-6">
                       <label class="small text-muted fw-bold">Tên</label>
                       <p class="fs-6">{{ docGia.ten }}</p>
@@ -87,7 +75,6 @@
                       <label class="small text-muted fw-bold">Ngày sinh</label>
                       <p class="fs-6">{{ formatDate(docGia.ngaySinh) }}</p>
                     </div>
-
                     <div class="col-6">
                       <label class="small text-muted fw-bold">Giới tính</label>
                       <p class="fs-6">{{ docGia.phai }}</p>
@@ -107,29 +94,42 @@
               </div>
             </div>
 
-            <!-- RIGHT SETTINGS -->
+            <!-- RIGHT: SETTINGS -->
             <div class="col-lg-6">
               <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-light border-bottom">
                   <h5 class="mb-0 text-purple fw-bold">
-                    <i class="fa-solid fa-gear me-2"></i>Cài đặt tài khoản
+                    <i class="fa-solid fa-gear me-2"></i>
+                    Cài đặt tài khoản
                   </h5>
                 </div>
 
                 <div class="card-body">
-                  <!-- BUTTON -->
-                  <div v-if="!showChangePassword" class="mb-4">
-                    <h6 class="fw-bold mb-2">Đổi mật khẩu</h6>
-                    <button class="btn btn-outline-purple btn-sm" @click="toggleChangePassword">
-                      Cập nhật mật khẩu
-                    </button>
+                  <!-- ACTION BUTTONS -->
+                  <div
+                    v-if="!showChangePassword && !showEditProfile"
+                    class="d-flex justify-content-between mb-4"
+                  >
+                    <div>
+                      <h6 class="fw-bold mb-2">Đổi mật khẩu</h6>
+                      <button class="btn btn-outline-purple btn-sm" @click="openPasswordForm">
+                        <i class="fa-solid fa-key me-1"></i> Đổi mật khẩu
+                      </button>
+                    </div>
+
+                    <div class="text-end">
+                      <h6 class="fw-bold mb-2">Thông tin cá nhân</h6>
+                      <button class="btn btn-outline-purple btn-sm" @click="openEditProfile">
+                        <i class="fa-solid fa-pen-to-square me-1"></i>
+                        Cập nhật thông tin
+                      </button>
+                    </div>
                   </div>
 
                   <!-- FORM ĐỔI MẬT KHẨU -->
                   <div v-if="showChangePassword">
-                    <h6 class="fw-bold mb-3">Đổi mật khẩu</h6>
+                    <h6 class="fw-bold mb-3 text-purple">Đổi mật khẩu</h6>
 
-                    <!-- CURRENT PASSWORD -->
                     <div class="mb-3 position-relative">
                       <label class="form-label">Mật khẩu hiện tại</label>
                       <input
@@ -144,7 +144,6 @@
                       ></i>
                     </div>
 
-                    <!-- NEW PASSWORD -->
                     <div class="mb-3 position-relative">
                       <label class="form-label">Mật khẩu mới</label>
                       <input
@@ -159,7 +158,6 @@
                       ></i>
                     </div>
 
-                    <!-- CONFIRM -->
                     <div class="mb-3 position-relative">
                       <label class="form-label">Xác nhận mật khẩu mới</label>
                       <input
@@ -174,12 +172,7 @@
                       ></i>
                     </div>
 
-                    <!-- Success -->
-                    <div v-if="passwordSuccess" class="alert alert-success py-2">
-                      {{ passwordSuccess }}
-                    </div>
-
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 mt-3">
                       <button
                         class="btn btn-purple text-white"
                         @click="handlePasswordChange"
@@ -189,7 +182,66 @@
                         {{ passwordLoading ? 'Đang lưu...' : 'Lưu mật khẩu' }}
                       </button>
 
-                      <button class="btn btn-outline-secondary" @click="toggleChangePassword">
+                      <button class="btn btn-outline-secondary" @click="closePasswordForm">
+                        <i class="fa-solid fa-xmark me-1"></i>Huỷ
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- FORM CẬP NHẬT THÔNG TIN -->
+                  <div v-if="showEditProfile" class="mt-4">
+                    <h6 class="fw-bold mb-3 text-purple">Chỉnh sửa thông tin</h6>
+
+                    <div class="row g-3">
+                      <div class="col-6">
+                        <label class="form-label">Họ lót</label>
+                        <input v-model="editForm.hoLot" class="form-control" />
+                      </div>
+
+                      <div class="col-6">
+                        <label class="form-label">Tên</label>
+                        <input v-model="editForm.ten" class="form-control" />
+                      </div>
+
+                      <div class="col-6">
+                        <label class="form-label">Ngày sinh</label>
+                        <input type="date" v-model="editForm.ngaySinh" class="form-control" />
+                      </div>
+
+                      <div class="col-6">
+                        <label class="form-label">Giới tính</label>
+                        <select v-model="editForm.phai" class="form-select">
+                          <option value="Nam">Nam</option>
+                          <option value="Nữ">Nữ</option>
+                        </select>
+                      </div>
+
+                      <div class="col-12">
+                        <label class="form-label">Số điện thoại</label>
+                        <input v-model="editForm.dienThoai" class="form-control" />
+                      </div>
+
+                      <div class="col-12">
+                        <label class="form-label">Địa chỉ</label>
+                        <textarea
+                          v-model="editForm.diaChi"
+                          rows="2"
+                          class="form-control"
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                      <button
+                        class="btn btn-purple text-white"
+                        @click="handleUpdateProfile"
+                        :disabled="editLoading"
+                      >
+                        <i class="fa-solid fa-floppy-disk me-1"></i>
+                        {{ editLoading ? 'Đang lưu...' : 'Lưu thay đổi' }}
+                      </button>
+
+                      <button class="btn btn-outline-secondary" @click="closeEditProfile">
                         <i class="fa-solid fa-xmark me-1"></i>Huỷ
                       </button>
                     </div>
@@ -198,11 +250,6 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- BORROW -->
-        <div class="tab-pane fade" id="borrowing-history">
-          <div class="card border-0 shadow-sm p-4 text-center text-muted">Chưa có dữ liệu</div>
         </div>
 
         <!-- STATISTICS -->
@@ -234,42 +281,79 @@
 <script setup>
 import { ref, computed } from 'vue'
 import useProfile from '@/composables/useProfile'
-import useToast from '@/composables/useToast'
-const { toastSuccess, toastError } = useToast()
+import { toast } from '@/utils/toast'
 
-// ========================
-//  GET DATA FROM COMPOSABLE
-// ========================
-const { docGia, changePassword, passwordError, passwordSuccess, passwordLoading } = useProfile()
+const {
+  docGia,
+  stats,
+  changePassword,
+  updateProfile,
+  passwordError,
+  passwordSuccess,
+  passwordLoading,
+} = useProfile()
 
-// ========================
-//  PASSWORD FORM + LOGIC
-// ========================
 const showChangePassword = ref(false)
-const toggleChangePassword = () => {
-  showChangePassword.value = !showChangePassword.value
+const showEditProfile = ref(false)
+
+const editForm = ref({
+  hoLot: '',
+  ten: '',
+  ngaySinh: '',
+  phai: '',
+  dienThoai: '',
+  diaChi: '',
+})
+
+const editLoading = ref(false)
+
+// --- OPEN/CLOSE FORMS ---
+function openEditProfile() {
+  if (showChangePassword.value) showChangePassword.value = false
+  showEditProfile.value = true
+
+  editForm.value = {
+    hoLot: docGia.value.hoLot,
+    ten: docGia.value.ten,
+    ngaySinh: docGia.value.ngaySinh?.slice(0, 10),
+    phai: docGia.value.phai,
+    dienThoai: docGia.value.dienThoai,
+    diaChi: docGia.value.diaChi,
+  }
+}
+
+function closeEditProfile() {
+  showEditProfile.value = false
+}
+
+function openPasswordForm() {
+  if (showEditProfile.value) showEditProfile.value = false
+  showChangePassword.value = true
+}
+
+function closePasswordForm() {
+  showChangePassword.value = false
   passwordError.value = ''
   passwordSuccess.value = ''
 }
 
+// --- PASSWORD LOGIC ---
 const passwordForm = ref({
   current: '',
   new: '',
   confirm: '',
 })
 
-// Show/hide password
 const showPassword = ref({
   current: false,
   new: false,
   confirm: false,
 })
 
-function toggleShowPassword(field) {
-  showPassword.value[field] = !showPassword.value[field]
+function toggleShowPassword(f) {
+  showPassword.value[f] = !showPassword.value[f]
 }
 
-// Submit password change
 async function handlePasswordChange() {
   const ok = await changePassword(
     passwordForm.value.current,
@@ -278,58 +362,98 @@ async function handlePasswordChange() {
   )
 
   if (ok) {
-    toastSuccess('Đổi mật khẩu thành công!')
-    setTimeout(() => toggleChangePassword(), 800)
+    toast.success('Đổi mật khẩu thành công!')
+    closePasswordForm()
   } else {
-    toastError(passwordError.value || 'Đổi mật khẩu thất bại!')
+    toast.error(passwordError.value || 'Đổi mật khẩu thất bại!')
   }
 }
 
-// ========================
-// OTHER UI LOGIC
-// ========================
-const stats = { dangMuon: 3, chuaTra: 1 }
+// --- UPDATE PROFILE ---
+async function handleUpdateProfile() {
+  editLoading.value = true
 
+  const ok = await updateProfile(editForm.value)
+
+  editLoading.value = false
+
+  if (ok) {
+    toast.success('Cập nhật thông tin thành công!')
+    closeEditProfile()
+  } else {
+    toast.error('Không thể cập nhật thông tin!')
+  }
+}
+
+// --- OTHER LOGIC ---
 const memberSince = computed(() => {
   if (!docGia.value?.createdAt) return '—'
   return new Date(docGia.value.createdAt).getFullYear()
 })
 
-function formatDate(date) {
-  if (!date) return '—'
-  return new Date(date).toLocaleDateString('vi-VN')
+function formatDate(d) {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('vi-VN')
 }
 
-const statCards = [
+const statCards = computed(() => [
   {
     label: 'Tổng đã mượn',
-    value: 50,
+    value: stats.value.tongMuon,
     icon: 'fa-solid fa-book fs-3 text-purple',
     colorClass: 'text-purple',
     bg: 'bg-purple bg-opacity-10',
   },
   {
+    label: 'Đang mượn',
+    value: stats.value.dangMuon,
+    icon: 'fa-solid fa-book-open-reader fs-3 text-info',
+    colorClass: 'text-info',
+    bg: 'bg-info bg-opacity-10',
+  },
+  {
+    label: 'Chưa trả',
+    value: stats.value.chuaTra ?? stats.value.dangMuon,
+    icon: 'fa-solid fa-clock-rotate-left fs-3 text-secondary',
+    colorClass: 'text-secondary',
+    bg: 'bg-secondary bg-opacity-10',
+  },
+  {
     label: 'Trả đúng hạn',
-    value: 47,
-    icon: 'fa-solid fa-check-circle fs-3 text-success',
+    value: stats.value.traDungHan,
+    icon: 'fa-solid fa-circle-check fs-3 text-success',
     colorClass: 'text-success',
     bg: 'bg-success bg-opacity-10',
   },
   {
-    label: 'Trả chậm',
-    value: 3,
-    icon: 'fa-solid fa-clock fs-3 text-warning',
+    label: 'Trả trễ hạn',
+    value: stats.value.traTre,
+    icon: 'fa-solid fa-triangle-exclamation fs-3 text-warning',
     colorClass: 'text-warning',
     bg: 'bg-warning bg-opacity-10',
   },
   {
-    label: 'Rating trung bình',
-    value: '4.8★',
-    icon: 'fa-solid fa-star fs-3 text-danger',
+    label: 'Tổng tiền phạt',
+    value: stats.value.tongTienPhat.toLocaleString('vi-VN') + 'đ',
+    icon: 'fa-solid fa-money-bill fs-3 text-danger',
     colorClass: 'text-danger',
     bg: 'bg-danger bg-opacity-10',
   },
-]
+  {
+    label: 'Số phiếu phạt',
+    value: stats.value.soPhieuPhat,
+    icon: 'fa-solid fa-receipt fs-3 text-primary',
+    colorClass: 'text-primary',
+    bg: 'bg-primary bg-opacity-10',
+  },
+  {
+    label: 'Tỷ lệ đúng hạn (%)',
+    value: stats.value.tiLeDungHan + '%',
+    icon: 'fa-solid fa-percent fs-3 text-dark',
+    colorClass: 'text-dark',
+    bg: 'bg-dark bg-opacity-10',
+  },
+])
 </script>
 
 <style scoped>
@@ -420,9 +544,6 @@ const statCards = [
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* ================================
-   ICON MẮT TOGGLE PASSWORD
-================================ */
 .password-toggle {
   right: 12px;
   top: 65%;

@@ -2,22 +2,32 @@ import { ref } from 'vue'
 import { api } from '@/services/apiService'
 
 export default function useProfile() {
-  const user = ref(null) // từ localStorage
-  const docGia = ref(null) // từ DB
+  const user = ref(null)
+  const docGia = ref(null)
   const loading = ref(false)
   const error = ref(null)
 
-  // ====== STATE CHO ĐỔI MẬT KHẨU ======
   const passwordLoading = ref(false)
   const passwordError = ref('')
   const passwordSuccess = ref('')
 
-  // ===== Lấy user từ localStorage =====
+  const editLoading = ref(false) // ⚠️ BẮT BUỘC PHẢI KHAI BÁO
+
+  const stats = ref({
+    tongMuon: 0,
+    dangMuon: 0,
+    chuaTra: 0,
+    traDungHan: 0,
+    traTre: 0,
+    tongTienPhat: 0,
+    soPhieuPhat: 0,
+    tiLeDungHan: 0,
+  })
+
   function loadLocalUser() {
     try {
       const rawUser = localStorage.getItem('user')
       if (!rawUser) return null
-
       user.value = JSON.parse(rawUser)
       return user.value
     } catch (err) {
@@ -26,7 +36,6 @@ export default function useProfile() {
     }
   }
 
-  // ========== Fetch hồ sơ độc giả ==========
   async function fetchProfile() {
     loading.value = true
     error.value = null
@@ -34,17 +43,11 @@ export default function useProfile() {
     try {
       const localUser = loadLocalUser()
 
-      if (!localUser) {
-        error.value = 'Không tìm thấy dữ liệu người dùng.'
+      if (!localUser?.refId) {
+        error.value = 'Không tìm thấy ID độc giả.'
         return
       }
 
-      if (!localUser.refId) {
-        error.value = 'Tài khoản không có refId để truy xuất thông tin độc giả.'
-        return
-      }
-
-      // Gọi API lấy thông tin độc giả
       const res = await api.get(`/readers/${localUser.refId}`)
       docGia.value = res.data
     } catch (err) {
@@ -55,27 +58,28 @@ export default function useProfile() {
     }
   }
 
-  // ========== Logic đổi mật khẩu ==========
   async function changePassword(currentPassword, newPassword, confirmPassword) {
-    // Reset state
     passwordError.value = ''
     passwordSuccess.value = ''
 
-    // ---- FE VALIDATE ----
-    if (!currentPassword) return (passwordError.value = 'Vui lòng nhập mật khẩu hiện tại.')
-
-    if (!newPassword || newPassword.length < 6)
-      return (passwordError.value = 'Mật khẩu mới phải có ít nhất 6 ký tự.')
-
-    if (newPassword !== confirmPassword)
-      return (passwordError.value = 'Xác nhận mật khẩu không trùng khớp.')
+    if (!currentPassword) {
+      passwordError.value = 'Vui lòng nhập mật khẩu hiện tại.'
+      return false
+    }
+    if (!newPassword || newPassword.length < 6) {
+      passwordError.value = 'Mật khẩu mới phải có ít nhất 6 ký tự.'
+      return false
+    }
+    if (newPassword !== confirmPassword) {
+      passwordError.value = 'Xác nhận mật khẩu không trùng khớp.'
+      return false
+    }
 
     try {
       passwordLoading.value = true
 
-      // CALL API BACKEND
-      const res = await api.put(`/users/change-password`, {
-        userId: user.value.id, // lấy từ localStorage
+      await api.put(`/users/change-password`, {
+        userId: user.value.id,
         currentPassword,
         newPassword,
       })
@@ -91,12 +95,76 @@ export default function useProfile() {
     }
   }
 
-  // ======= Reload profile =======
-  async function refresh() {
-    await fetchProfile()
+  async function fetchStats() {
+    try {
+      const localUser = loadLocalUser()
+      if (!localUser?.refId) return
+
+      const borrowRes = await api.get(`/borrows`)
+      const userBorrows = borrowRes.data.filter((b) => b.maDocGia?._id === localUser.refId)
+
+      const fineRes = await api.get(`/fines`)
+      const userFines = fineRes.data.filter((f) =>
+        userBorrows.some((b) => b._id === f.maMuonSach?._id),
+      )
+
+      const tongMuon = userBorrows.length
+      const dangMuon = userBorrows.filter((b) => b.trangThai === 'dang_muon').length
+      const traTre = userBorrows.filter((b) => b.trangThai === 'tre_han').length
+
+      const traDungHan = userBorrows.filter((b) => {
+        if (!b.ngayTra) return false
+        const hanTra = new Date(b.ngayMuon)
+        hanTra.setDate(hanTra.getDate() + 7)
+        return new Date(b.ngayTra) <= hanTra
+      }).length
+
+      const chuaTra = dangMuon + traTre
+      const tongTienPhat = userFines.reduce((sum, f) => sum + (f.soTien || 0), 0)
+      const soPhieuPhat = userFines.length
+      const tiLeDungHan = tongMuon > 0 ? ((traDungHan / tongMuon) * 100).toFixed(1) : 0
+
+      stats.value = {
+        tongMuon,
+        dangMuon,
+        chuaTra,
+        traDungHan,
+        traTre,
+        tongTienPhat,
+        soPhieuPhat,
+        tiLeDungHan,
+      }
+    } catch (err) {
+      console.error('Lỗi thống kê:', err)
+    }
   }
 
-  // auto load
+  async function updateProfile(newData) {
+    try {
+      const localUser = loadLocalUser()
+      if (!localUser?.refId) throw new Error('Không tìm thấy ID độc giả')
+
+      editLoading.value = true
+
+      // convert day
+      if (newData.ngaySinh) {
+        newData.ngaySinh = new Date(newData.ngaySinh).toISOString()
+      }
+
+      await api.put(`/readers/${localUser.refId}`, newData)
+
+      await fetchProfile()
+
+      return true
+    } catch (err) {
+      console.error('Lỗi cập nhật thông tin:', err)
+      return false
+    } finally {
+      editLoading.value = false
+    }
+  }
+
+  fetchStats()
   loadLocalUser()
   fetchProfile()
 
@@ -105,12 +173,17 @@ export default function useProfile() {
     docGia,
     loading,
     error,
-    refresh,
 
-    // password change expose
+    stats,
+    fetchStats,
+
     changePassword,
+    updateProfile,
+
     passwordLoading,
     passwordError,
     passwordSuccess,
+
+    editLoading,
   }
 }

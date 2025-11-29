@@ -7,6 +7,7 @@ const SachSchema = new mongoose.Schema(
         donGia: Number,
         soQuyen: Number,
         namXuatBan: Number,
+        biaSach: String,
         maNhaXuatBan: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "NhaXuatBan",
