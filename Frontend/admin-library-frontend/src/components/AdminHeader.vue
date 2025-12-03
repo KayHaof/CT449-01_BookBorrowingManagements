@@ -3,8 +3,6 @@
     <h4 class="fw-bold">Trang quản trị</h4>
 
     <div class="d-flex align-items-center gap-3">
-      <input type="text" placeholder="Tìm kiếm..." class="form-control w-50" />
-
       <div class="admin-avatar">A</div>
     </div>
   </header>

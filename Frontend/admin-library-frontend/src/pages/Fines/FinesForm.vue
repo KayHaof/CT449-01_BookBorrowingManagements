@@ -35,30 +35,58 @@ import { reactive, watch } from 'vue'
 import AdminModal from '@/components/AdminModal.vue'
 import AdminFormGroup from '@/components/AdminFormGroup.vue'
 import useFines from '@/composables/useFines'
+import { toast } from '@/utils/toast'
 
 const props = defineProps({ editData: Object })
 const emit = defineEmits(['close', 'saved'])
 
 const { createFine, updateFine } = useFines()
 
-const form = reactive({
+// ⚡ Default form
+const defaultForm = {
   maPhieuPhat: '',
   maNVLap: '',
   maMuonSach: '',
   soTien: '',
   lyDo: '',
   ngayLap: '',
-})
+}
 
+// ⚡ Reactive form
+const form = reactive({ ...defaultForm })
+
+// 🔥 Load dữ liệu khi sửa hoặc reset khi tạo mới
 watch(
   () => props.editData,
-  (v) => v && Object.assign(form, v),
+  (v) => {
+    Object.assign(form, defaultForm)
+
+    if (v) {
+      form.maPhieuPhat = v.maPhieuPhat
+      form.maNVLap = v.maNVLap
+      form.maMuonSach = v.maMuonSach
+      form.soTien = v.soTien
+      form.lyDo = v.lyDo
+      form.ngayLap = v.ngayLap ? v.ngayLap.substring(0, 10) : ''
+    }
+  },
+  { immediate: true },
 )
 
 const save = async () => {
-  props.editData ? await updateFine(props.editData._id, form) : await createFine(form)
+  try {
+    if (props.editData) {
+      await updateFine(props.editData._id, form)
+      toast.success('Cập nhật phiếu phạt thành công!')
+    } else {
+      await createFine(form)
+      toast.success('Tạo phiếu phạt thành công!')
+    }
 
-  emit('saved')
-  emit('close')
+    emit('saved')
+    emit('close')
+  } catch (err) {
+    toast.error(err.message || 'Có lỗi xảy ra!')
+  }
 }
 </script>

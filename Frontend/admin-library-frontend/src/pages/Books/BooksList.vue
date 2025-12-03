@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex justify-content-between mb-3">
-      <h3 class="fw-bold">Quản lý Sách</h3>
+      <h3 class="fw-bold"><i class="fa-solid fa-book text-primary"></i> Quản lý Sách</h3>
       <button class="btn btn-primary" @click="openForm()">+ Thêm sách</button>
     </div>
 
@@ -35,12 +35,14 @@ import Pagination from '@/components/Pagination.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import BooksForm from './BooksForm.vue'
 
+import { toast } from '@/utils/toast'
+
 const { getBooks, deleteBook } = useBooks()
 
 const books = ref([])
 
 const currentPage = ref(1)
-const itemsPerPage = 10
+const itemsPerPage = 5
 
 const showConfirm = ref(false)
 const deletingItem = ref(null)

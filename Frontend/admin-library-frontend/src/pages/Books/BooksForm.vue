@@ -21,47 +21,85 @@
         <input type="number" class="form-control" v-model="form.namXuatBan" />
       </AdminFormGroup>
 
-      <AdminFormGroup label="Ảnh bìa (URL)">
-        <input class="form-control" v-model="form.biaSach" />
+      <!-- ẢNH BÌA: đổi từ URL sang chọn file -->
+      <AdminFormGroup label="Ảnh bìa">
+        <input type="file" class="form-control" accept="image/*" @change="onImageChange" />
+
+        <img
+          v-if="previewImage"
+          :src="getImageUrl(previewImage)"
+          class="img-thumbnail mt-2"
+          style="max-height: 150px"
+        />
       </AdminFormGroup>
 
-      <!-- Nhà Xuất Bản -->
+      <!-- ====================== NXB ====================== -->
       <AdminFormGroup label="Nhà xuất bản">
-        <select class="form-select" v-model="form.maNhaXuatBan">
-          <option disabled value="">-- Chọn NXB --</option>
-          <option v-for="p in publishers" :key="p._id" :value="p._id">
-            {{ p.tenNXB }}
-          </option>
-        </select>
+        <div class="select-row">
+          <select class="form-select" v-model="form.maNhaXuatBan">
+            <option disabled value="">-- Chọn NXB --</option>
+            <option v-for="p in publishers" :key="p._id" :value="p._id">
+              {{ p.tenNXB }}
+            </option>
+          </select>
+
+          <button type="button" class="btn-add" @click="showPublisherForm = true">+</button>
+        </div>
       </AdminFormGroup>
 
-      <!-- Thể Loại -->
+      <!-- ====================== THỂ LOẠI ====================== -->
       <AdminFormGroup label="Thể loại">
-        <select class="form-select" v-model="form.maPhanLoai">
-          <option disabled value="">-- Chọn thể loại --</option>
-          <option v-for="c in categories" :key="c._id" :value="c._id">
-            {{ c.tenLoai }}
-          </option>
-        </select>
+        <div class="select-row">
+          <select class="form-select" v-model="form.maPhanLoai">
+            <option disabled value="">-- Chọn thể loại --</option>
+            <option v-for="c in categories" :key="c._id" :value="c._id">
+              {{ c.tenLoai }}
+            </option>
+          </select>
+
+          <button type="button" class="btn-add" @click="showCategoryForm = true">+</button>
+        </div>
       </AdminFormGroup>
 
+      <!-- ====================== TÁC GIẢ ====================== -->
       <AdminFormGroup label="Tác giả" data-full>
-        <select class="form-select author-select" v-model="form.maTacGia" multiple>
-          <option v-for="a in authors" :key="a._id" :value="a._id">
-            {{ a.hoTen }}
-          </option>
-        </select>
+        <div class="select-row">
+          <select class="form-select author-select" v-model="form.maTacGia" multiple>
+            <option v-for="a in authors" :key="a._id" :value="a._id">
+              {{ a.hoTen }}
+            </option>
+          </select>
+
+          <button type="button" class="btn-add" @click="showAuthorForm = true">+</button>
+        </div>
       </AdminFormGroup>
 
       <button class="btn btn-primary w-100 mt-3">Lưu</button>
     </form>
+
+    <!-- ====================== MODALS ====================== -->
+    <AdminModal v-if="showPublisherForm" title="Thêm NXB" @close="closePublisher">
+      <PublishersForm @saved="afterAddPublisher" @close="closePublisher" />
+    </AdminModal>
+
+    <AdminModal v-if="showCategoryForm" title="Thêm thể loại" @close="closeCategory">
+      <CategoriesForm @saved="afterAddCategory" @close="closeCategory" />
+    </AdminModal>
+
+    <AdminModal v-if="showAuthorForm" title="Thêm tác giả" @close="closeAuthor">
+      <AuthorsForm @saved="afterAddAuthor" @close="closeAuthor" />
+    </AdminModal>
   </AdminModal>
 </template>
 
 <script setup>
 import { reactive, watch, ref, onMounted } from 'vue'
+
 import AdminModal from '../../components/AdminModal.vue'
 import AdminFormGroup from '../../components/AdminFormGroup.vue'
+import PublishersForm from '../Publishers/PublishersForm.vue'
+import CategoriesForm from '../Categories/CategoriesForm.vue'
+import AuthorsForm from '../Authors/AuthorsForm.vue'
 
 import useBooks from '@/composables/useBooks'
 import usePublishers from '@/composables/usePublishers'
@@ -76,12 +114,34 @@ const { getPublishers } = usePublishers()
 const { getCategories } = useCategories()
 const { getAuthors } = useAuthors()
 
-// Data lists
 const publishers = ref([])
 const categories = ref([])
 const authors = ref([])
 
-// Default form
+// ===== MODAL FLAGS =====
+const showPublisherForm = ref(false)
+const showCategoryForm = ref(false)
+const showAuthorForm = ref(false)
+
+// ===== IMAGE PREVIEW =====
+const previewImage = ref(null)
+const selectedImage = ref(null)
+
+const onImageChange = (e) => {
+  const file = e.target.files[0]
+  selectedImage.value = file
+  if (file) previewImage.value = URL.createObjectURL(file)
+}
+
+const BE_URL = 'http://localhost:8080'
+
+// chuẩn URL hình ảnh
+const getImageUrl = (path) => {
+  if (!path) return '/no-image.jpg'
+  return `${BE_URL}${path}`
+}
+
+// ===== FORM DATA =====
 const defaultForm = {
   maSach: '',
   tenSach: '',
@@ -96,14 +156,13 @@ const defaultForm = {
 
 const form = reactive({ ...defaultForm })
 
-// Load dropdowns
 onMounted(async () => {
   publishers.value = await getPublishers()
   categories.value = await getCategories()
   authors.value = await getAuthors()
 })
 
-// Load edit data
+// Khi sửa → load data
 watch(
   () => props.editData,
   (v) => {
@@ -119,6 +178,8 @@ watch(
       form.maNhaXuatBan = v.maNhaXuatBan?._id
       form.maPhanLoai = v.maPhanLoai?._id
       form.maTacGia = v.maTacGia?.map((a) => a._id) || []
+
+      previewImage.value = v.biaSach
     }
   },
   { immediate: true },
@@ -126,133 +187,92 @@ watch(
 
 import { toast } from '@/utils/toast'
 
+// ===== SAU KHI THÊM MỚI NHÀ XUẤT BẢN =====
+const afterAddPublisher = async () => {
+  publishers.value = await getPublishers()
+  showPublisherForm.value = false
+}
+
+// ===== SAU KHI THÊM MỚI THỂ LOẠI =====
+const afterAddCategory = async () => {
+  categories.value = await getCategories()
+  showCategoryForm.value = false
+}
+
+// ===== SAU KHI THÊM MỚI TÁC GIẢ =====
+const afterAddAuthor = async () => {
+  authors.value = await getAuthors()
+  showAuthorForm.value = false
+}
+
+const closePublisher = () => (showPublisherForm.value = false)
+const closeCategory = () => (showCategoryForm.value = false)
+const closeAuthor = () => (showAuthorForm.value = false)
+
+// ===== LƯU SÁCH =====
 const save = async () => {
   try {
-    if (props.editData) {
-      await updateBook(props.editData._id, form)
+    const fd = new FormData()
 
+    // add all normal fields
+    fd.append('maSach', form.maSach)
+    fd.append('tenSach', form.tenSach)
+    fd.append('donGia', form.donGia)
+    fd.append('soQuyen', form.soQuyen)
+    fd.append('namXuatBan', form.namXuatBan)
+    fd.append('maNhaXuatBan', form.maNhaXuatBan)
+    fd.append('maPhanLoai', form.maPhanLoai)
+
+    // array maTacGia[]
+    form.maTacGia.forEach((id) => {
+      fd.append('maTacGia[]', id)
+    })
+
+    // ảnh nếu có
+    if (selectedImage.value) {
+      fd.append('biaSach', selectedImage.value)
+    } else if (form.biaSach) {
+      // nếu đang chỉnh sửa mà không đổi ảnh
+      fd.append('biaSach', form.biaSach)
+    }
+
+    if (props.editData) {
+      await updateBook(props.editData._id, fd)
       toast.success('Cập nhật sách thành công!')
     } else {
-      await createBook(form)
-
+      await createBook(fd)
       toast.success('Thêm sách thành công!')
     }
 
     emit('saved')
     emit('close')
   } catch (err) {
-    toast.error('Lưu sách thất bại. Vui lòng thử lại!')
     console.error(err)
+    toast.error('Lưu sách thất bại!')
   }
 }
 </script>
+
 <style scoped>
-/* --------------- LAYOUT CHUNG --------------- */
-form {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px 28px;
-  padding: 10px 4px;
-}
-
-form > *[data-full] {
-  grid-column: 1 / -1;
-}
-
-/* --------------- FORM GROUP --------------- */
-.admin-form-group {
+.select-row {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
 }
 
-.admin-form-group label {
-  font-weight: 600;
-  color: #222;
-  font-size: 15px;
-}
-
-/* --------------- INPUT & SELECT --------------- */
-input.form-control,
-select.form-select {
-  border-radius: 12px;
-  padding: 12px 16px;
-  border: 1px solid #ccc;
-  font-size: 15px;
-  background: #fafafa;
-  transition: 0.25s ease;
-}
-
-input.form-control:hover,
-select.form-select:hover {
-  border-color: #a38bff;
-}
-
-input.form-control:focus,
-select.form-select:focus {
+.btn-add {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   background: #fff;
-  border-color: transparent;
-  outline: 0;
-  box-shadow: 0 0 0 2px rgba(123, 92, 255, 0.35);
+  border: 1px solid #7b5cff;
+  color: #7b5cff;
+  font-size: 20px;
+  padding-bottom: 3px;
+  cursor: pointer;
+  transition: 0.2s;
 }
-
-/* --------------- MULTI SELECT (TÁC GIẢ) --------------- */
-.author-select {
-  height: auto !important;
-  min-height: 50px;
-  max-height: 160px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  background: #fafafa;
-  overflow-y: auto;
-}
-
-.author-select option {
-  padding: 6px;
-  border-bottom: 1px solid #f3f3f3;
-}
-
-.author-select::-webkit-scrollbar {
-  width: 6px;
-}
-
-.author-select::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #7b5cff, #b06bff);
-  border-radius: 6px;
-}
-
-/* hover gradient mạnh hơn */
-.author-select::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #6d4dff, #a359ff);
-}
-
-/* --------------- NÚT LƯU (GRADIENT) --------------- */
-button.btn-primary {
-  grid-column: 1 / -1;
-  padding: 14px;
-  margin-top: 10px;
-  border-radius: 12px;
-  font-size: 17px;
-  font-weight: 600;
-  border: none;
-
-  background: linear-gradient(135deg, #7b5cff, #b06bff);
-  color: white;
-  transition: 0.25s ease;
-}
-
-button.btn-primary:hover {
-  filter: brightness(1.08);
-}
-
-button.btn-primary:active {
-  filter: brightness(0.95);
-}
-
-/* --------------- RESPONSIVE --------------- */
-@media (max-width: 768px) {
-  form {
-    grid-template-columns: 1fr;
-  }
+.btn-add:hover {
+  background: #f2eaff;
 }
 </style>

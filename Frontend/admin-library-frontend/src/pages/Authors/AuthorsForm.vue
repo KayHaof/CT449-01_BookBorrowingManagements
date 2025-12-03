@@ -9,14 +9,6 @@
         <input class="form-control" v-model="form.hoTen" required />
       </AdminFormGroup>
 
-      <AdminFormGroup label="Ngày sinh">
-        <input type="date" class="form-control" v-model="form.ngaySinh" />
-      </AdminFormGroup>
-
-      <AdminFormGroup label="Quê quán">
-        <input class="form-control" v-model="form.queQuan" />
-      </AdminFormGroup>
-
       <button class="btn btn-primary w-100 mt-3">Lưu</button>
     </form>
   </AdminModal>
@@ -27,6 +19,7 @@ import { reactive, watch } from 'vue'
 import AdminModal from '@/components/AdminModal.vue'
 import AdminFormGroup from '@/components/AdminFormGroup.vue'
 import useAuthors from '@/composables/useAuthors'
+import { toast } from '@/utils/toast'
 
 const props = defineProps({ editData: Object })
 const emit = defineEmits(['close', 'saved'])
@@ -37,45 +30,39 @@ const { createAuthor, updateAuthor } = useAuthors()
 const defaultForm = {
   maTacGia: '',
   hoTen: '',
-  ngaySinh: '',
-  queQuan: '',
 }
 
 // ⚡ Reactive form
 const form = reactive({ ...defaultForm })
 
-// 📌 Format date về YYYY-MM-DD
-function formatDate(dateStr) {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  return d.toISOString().split('T')[0]
-}
-
-// 🔥 Khi mở form hoặc thay đổi editData → load dữ liệu hoặc reset
+// 🔥 Khi mở modal → load hoặc reset form
 watch(
   () => props.editData,
   (v) => {
-    Object.assign(form, defaultForm) // reset form trước
+    Object.assign(form, defaultForm)
 
     if (v) {
       form.maTacGia = v.maTacGia
       form.hoTen = v.hoTen
-      form.ngaySinh = formatDate(v.ngaySinh)
-      form.queQuan = v.queQuan
     }
   },
   { immediate: true },
 )
 
-// 💾 Save
 const save = async () => {
-  if (props.editData) {
-    await updateAuthor(props.editData._id, form)
-  } else {
-    await createAuthor(form)
-  }
+  try {
+    if (props.editData) {
+      await updateAuthor(props.editData._id, form)
+      toast.success('Cập nhật tác giả thành công!')
+    } else {
+      await createAuthor(form)
+      toast.success('Thêm tác giả thành công!')
+    }
 
-  emit('saved')
-  emit('close')
+    emit('saved')
+    emit('close')
+  } catch (err) {
+    toast.error(err.message || 'Có lỗi xảy ra khi xử lý dữ liệu!')
+  }
 }
 </script>

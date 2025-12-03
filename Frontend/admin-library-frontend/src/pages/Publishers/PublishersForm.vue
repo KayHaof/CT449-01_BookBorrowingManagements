@@ -23,27 +23,52 @@ import { reactive, watch } from 'vue'
 import AdminModal from '@/components/AdminModal.vue'
 import AdminFormGroup from '@/components/AdminFormGroup.vue'
 import usePublishers from '@/composables/usePublishers'
+import { toast } from '@/utils/toast'
 
 const props = defineProps({ editData: Object })
 const emit = defineEmits(['close', 'saved'])
 
 const { createPublisher, updatePublisher } = usePublishers()
 
-const form = reactive({
+// ⚡ Form mặc định
+const defaultForm = {
   maNXB: '',
   tenNXB: '',
   diaChi: '',
-})
+}
 
+// ⚡ Reactive form
+const form = reactive({ ...defaultForm })
+
+// 🔥 Load dữ liệu khi sửa hoặc reset khi tạo mới
 watch(
   () => props.editData,
-  (v) => v && Object.assign(form, v),
+  (v) => {
+    Object.assign(form, defaultForm) // reset form trước
+
+    if (v) {
+      form.maNXB = v.maNXB
+      form.tenNXB = v.tenNXB
+      form.diaChi = v.diaChi
+    }
+  },
+  { immediate: true },
 )
 
 const save = async () => {
-  props.editData ? await updatePublisher(props.editData._id, form) : await createPublisher(form)
+  try {
+    if (props.editData) {
+      await updatePublisher(props.editData._id, form)
+      toast.success('Cập nhật nhà xuất bản thành công!')
+    } else {
+      await createPublisher(form)
+      toast.success('Thêm nhà xuất bản thành công!')
+    }
 
-  emit('saved')
-  emit('close')
+    emit('saved')
+    emit('close')
+  } catch (err) {
+    toast.error(err.message || 'Đã xảy ra lỗi!')
+  }
 }
 </script>

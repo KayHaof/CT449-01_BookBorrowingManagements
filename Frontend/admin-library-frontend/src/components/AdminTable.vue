@@ -13,8 +13,12 @@
           <td v-for="c in columns" :key="c.key">{{ r[c.key] }}</td>
 
           <td class="text-end action-col">
-            <button class="btn-edit" @click="$emit('edit', r)">Sửa</button>
-            <button class="btn-delete" @click="$emit('delete', r)">Xoá</button>
+            <!-- ⭐ Nếu có slot actions → dùng slot -->
+            <slot name="actions" :row="r">
+              <!-- ⭐ Nếu KHÔNG có slot → dùng nút mặc định -->
+              <button class="btn-edit" @click="$emit('edit', r)">Sửa</button>
+              <button class="btn-delete" @click="$emit('delete', r)">Xoá</button>
+            </slot>
           </td>
         </tr>
       </tbody>

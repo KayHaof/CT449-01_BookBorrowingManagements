@@ -3,12 +3,9 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
-// Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap'
-
-// FontAwesome
 import '@fortawesome/fontawesome-free/css/all.min.css'
+import 'bootstrap'
 
 import 'toastify-js/src/toastify.css'
 import '@/assets/css/toast.css'
