@@ -14,7 +14,7 @@
       </AdminFormGroup>
 
       <AdminFormGroup label="Ngày mượn">
-        <input type="date" class="form-control" v-model="form.ngayMuon" />
+        <input type="date" class="form-control" v-model="form.ngayMuon" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Ngày trả">
@@ -43,11 +43,10 @@ import useBorrows from '@/composables/useBorrows'
 import { toast } from '@/utils/toast'
 
 const props = defineProps({ editData: Object })
-const emit = defineEmits(['close', 'saved'])
+const emit = defineEmits(['close', 'saved', 'create-fine'])
 
 const { createBorrow, updateBorrow } = useBorrows()
 
-// ⚡ Form mặc định
 const defaultForm = {
   maMuon: '',
   maDocGia: '',
@@ -57,7 +56,6 @@ const defaultForm = {
   trangThai: 'dang_muon',
 }
 
-// ⚡ Reactive form
 const form = reactive({ ...defaultForm })
 
 watch(
@@ -79,15 +77,15 @@ watch(
   { immediate: true },
 )
 
-// ⭐ Tự động xử lý ngày trả theo trạng thái
+// Auto set ngày trả cho “đã trả” hoặc “trễ hạn”
 watch(
   () => form.trangThai,
   (value) => {
-    if (value === 'da_tra') {
-      // Nếu chuyển sang đã trả → set ngày trả = hôm nay
-      form.ngayTra = new Date().toISOString().substring(0, 10)
+    if (value === 'da_tra' || value === 'tre_han') {
+      if (!form.ngayTra) {
+        form.ngayTra = new Date().toISOString().substring(0, 10)
+      }
     } else {
-      // Nếu chuyển về trạng thái khác → reset ngày trả
       form.ngayTra = ''
     }
   },
@@ -95,18 +93,33 @@ watch(
 
 const save = async () => {
   try {
+    let updated
+
     if (props.editData) {
-      await updateBorrow(props.editData._id, form)
-      toast.success('Cập nhật phiếu mượn thành công!')
+      updated = await updateBorrow(props.editData._id, form)
+      console.log(updated)
+
+      toast.success('Cập nhật thành công!')
     } else {
-      await createBorrow(form)
-      toast.success('Tạo phiếu mượn thành công!')
+      updated = await createBorrow(form)
+      toast.success('Tạo phiếu mới!')
+    }
+
+    // Tạo phiếu phạt nếu trễ hạn
+    if (form.trangThai === 'tre_han') {
+      const borrow = updated.borrow // <-- lấy đúng object trả về từ server
+
+      emit('create-fine', {
+        maMuonSach: borrow._id,
+        ngayMuon: borrow.ngayMuon,
+        ngayTra: borrow.ngayTra,
+      })
     }
 
     emit('saved')
     emit('close')
   } catch (err) {
-    toast.error(err.message || 'Có lỗi xảy ra, vui lòng thử lại!')
+    toast.error(err.message || 'Có lỗi xảy ra!')
   }
 }
 </script>

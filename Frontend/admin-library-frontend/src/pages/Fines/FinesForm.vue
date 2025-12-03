@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue'
+import { reactive, watch, computed } from 'vue'
 import AdminModal from '@/components/AdminModal.vue'
 import AdminFormGroup from '@/components/AdminFormGroup.vue'
 import useFines from '@/composables/useFines'
@@ -42,7 +42,6 @@ const emit = defineEmits(['close', 'saved'])
 
 const { createFine, updateFine } = useFines()
 
-// ⚡ Default form
 const defaultForm = {
   maPhieuPhat: '',
   maNVLap: '',
@@ -52,22 +51,32 @@ const defaultForm = {
   ngayLap: '',
 }
 
-// ⚡ Reactive form
 const form = reactive({ ...defaultForm })
 
-// 🔥 Load dữ liệu khi sửa hoặc reset khi tạo mới
+const isEdit = computed(() => props.editData && props.editData._id)
+
+// 🔥 LOAD DATA KHI SỬA
 watch(
   () => props.editData,
   (v) => {
     Object.assign(form, defaultForm)
-
-    if (v) {
+    console.log(v)
+    if (v && v._id) {
+      // Mode Sửa
+      form.maPhieuPhat = v.maPhieuPhat
+      form.maNVLap = v.maNVLap?._id || v.maNVLap
+      form.maMuonSach = v.maMuonSach?._id || v.maMuonSach
+      form.soTien = v.soTien
+      form.lyDo = v.lyDo
+      form.ngayLap = v.ngayLap ? v.ngayLap.substring(0, 10) : ''
+    } else if (v) {
+      // Mode Tạo từ BorrowPage
       form.maPhieuPhat = v.maPhieuPhat
       form.maNVLap = v.maNVLap
       form.maMuonSach = v.maMuonSach
       form.soTien = v.soTien
       form.lyDo = v.lyDo
-      form.ngayLap = v.ngayLap ? v.ngayLap.substring(0, 10) : ''
+      form.ngayLap = v.ngayLap
     }
   },
   { immediate: true },
@@ -75,7 +84,7 @@ watch(
 
 const save = async () => {
   try {
-    if (props.editData) {
+    if (isEdit.value) {
       await updateFine(props.editData._id, form)
       toast.success('Cập nhật phiếu phạt thành công!')
     } else {
@@ -86,7 +95,7 @@ const save = async () => {
     emit('saved')
     emit('close')
   } catch (err) {
-    toast.error(err.message || 'Có lỗi xảy ra!')
+    toast.error(err.message || 'Lỗi xảy ra!')
   }
 }
 </script>

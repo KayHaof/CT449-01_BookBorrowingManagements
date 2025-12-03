@@ -5,10 +5,8 @@
       <button class="btn btn-primary" @click="openForm()">+ Tạo phiếu mượn</button>
     </div>
 
-    <!-- TABLE -->
     <AdminTable :columns="columns" :rows="pagedBorrows" @edit="openForm" @delete="askDelete" />
 
-    <!-- PAGINATION -->
     <Pagination
       :currentPage="currentPage"
       :totalItems="borrows.length"
@@ -16,17 +14,23 @@
       @page-change="changePage"
     />
 
-    <!-- FORM -->
-    <BorrowsForm v-if="showForm" :editData="editing" @close="closeForm" @saved="loadBorrows" />
+    <BorrowsForm
+      v-if="showForm"
+      :editData="editing"
+      @close="closeForm"
+      @saved="loadBorrows"
+      @create-fine="openFineForm"
+    />
 
-    <!-- CONFIRM DELETE -->
     <ConfirmModal
       v-if="showConfirm"
       title="Xóa phiếu mượn?"
-      :message="`Bạn có chắc chắn muốn xóa phiếu mượn: ${deletingItem?.maMuon}? Hành động này không thể hoàn tác.`"
+      :message="`Bạn có chắc chắn muốn xóa: ${deletingItem?.maMuon}?`"
       @close="showConfirm = false"
       @confirm="confirmDelete"
     />
+
+    <FinesForm v-if="showFineForm" :editData="fineData" @close="showFineForm = false" />
   </div>
 </template>
 
@@ -37,6 +41,7 @@ import AdminTable from '@/components/AdminTable.vue'
 import Pagination from '@/components/Pagination.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import BorrowsForm from './BorrowsForm.vue'
+import FinesForm from '../Fines/FinesForm.vue'
 
 import useBorrows from '@/composables/useBorrows'
 import { toast } from '@/utils/toast'
@@ -45,84 +50,108 @@ const { getBorrows, deleteBorrow } = useBorrows()
 
 const borrows = ref([])
 
-// Pagination
+/* Pagination */
 const currentPage = ref(1)
 const itemsPerPage = 5
-
-// Form
-const showForm = ref(false)
-const editing = ref(null)
-
-// Delete modal
-const showConfirm = ref(false)
-const deletingItem = ref(null)
-
-// Columns (hiển thị trên bảng)
-const columns = [
-  { key: 'maMuon', label: 'Mã mượn' },
-  { key: 'ngayMuonFormat', label: 'Ngày mượn' },
-  { key: 'ngayTraFormat', label: 'Ngày hạn trả' },
-  { key: 'trangThai', label: 'Trạng thái' },
-]
-
-/* ========= PAGINATION ========= */
-const pagedBorrows = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  return borrows.value.slice(start, start + itemsPerPage)
-})
 
 const changePage = (p) => {
   currentPage.value = p
 }
 
-const getDueDate = (date) => {
-  if (!date) return '-'
-  const d = new Date(date)
-  d.setDate(d.getDate() + 14)
-  return d.toLocaleDateString('vi-VN')
-}
+/* Forms */
+const showForm = ref(false)
+const editing = ref(null)
 
-const mapStatus = (status) => {
-  switch (status) {
-    case 'dang_ky_muon':
-      return 'Đang ký mượn'
-    case 'dang_muon':
-      return 'Đang mượn'
-    case 'da_tra':
-      return 'Đã trả'
-    case 'tre_han':
-      return 'Quá hạn'
-    default:
-      return status
+/* Delete */
+const showConfirm = ref(false)
+const deletingItem = ref(null)
+
+/* Table columns */
+const columns = [
+  { key: 'maMuon', label: 'Mã mượn' },
+  { key: 'ngayMuonFormat', label: 'Ngày mượn' },
+  { key: 'ngayTraFormat', label: 'Ngày trả' },
+  { key: 'statusLabel', label: 'Trạng thái' },
+]
+
+const pagedBorrows = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  return borrows.value.slice(start, start + itemsPerPage)
+})
+
+/* ===========================
+   ⭐ FORM PHẠT
+=========================== */
+const showFineForm = ref(false)
+const fineData = ref(null)
+
+const openFineForm = (info) => {
+  const user = JSON.parse(localStorage.getItem('user'))
+  const staffId = user?.refId
+
+  if (!staffId) {
+    toast.error('Không tìm thấy ID nhân viên!')
+    return
   }
+
+  const ngayMuon = new Date(info.ngayMuon)
+  const ngayTra = new Date(info.ngayTra)
+
+  const totalDays = Math.ceil((ngayTra - ngayMuon) / (1000 * 3600 * 24))
+  const lateDays = Math.max(0, totalDays - 14)
+
+  const base = 50000 // tiền gốc
+  const fineAmount = Math.round(base * (Math.pow(1.05, lateDays) - 1))
+
+  const generateFineCode = () => 'PP' + Math.floor(100000 + Math.random() * 900000)
+
+  fineData.value = {
+    maPhieuPhat: generateFineCode(),
+    maNVLap: staffId,
+    maMuonSach: info.maMuonSach,
+    soTien: fineAmount,
+    lyDo: `Trễ ${lateDays} ngày`,
+    ngayLap: new Date().toISOString().substring(0, 10),
+  }
+
+  // đảm bảo không edit mode
+  delete fineData.value._id
+
+  showFineForm.value = true
 }
 
-/* ========= LOAD DATA ========= */
+/* ===========================
+   LOAD DATA
+=========================== */
 const loadBorrows = async () => {
   const raw = await getBorrows()
 
-  // Format ngày để hiển thị đẹp hơn
   borrows.value = raw.map((b) => ({
     ...b,
     ngayMuonFormat: b.ngayMuon ? new Date(b.ngayMuon).toLocaleDateString('vi-VN') : '—',
-    ngayTraFormat: b.ngayTra
-      ? new Date(b.ngayTra).toLocaleDateString('vi-VN')
-      : getDueDate(b.ngayMuon),
-    trangThai: mapStatus(b.trangThai),
+    ngayTraFormat: b.ngayTra ? new Date(b.ngayTra).toLocaleDateString('vi-VN') : '—',
+
+    // Hiển thị label, nhưng GIỮ nguyên b.trangThai để dùng cho form sửa
+    statusLabel:
+      b.trangThai === 'tre_han'
+        ? 'Quá hạn'
+        : b.trangThai === 'da_tra'
+          ? 'Đã trả'
+          : b.trangThai === 'dang_muon'
+            ? 'Đang mượn'
+            : 'Đăng ký mượn',
   }))
 }
 
-/* ========= FORM ========= */
+/* Forms */
 const openForm = (row = null) => {
   editing.value = row
   showForm.value = true
 }
 
-const closeForm = () => {
-  showForm.value = false
-}
+const closeForm = () => (showForm.value = false)
 
-/* ========= DELETE ========= */
+/* Delete */
 const askDelete = (row) => {
   deletingItem.value = row
   showConfirm.value = true
@@ -130,7 +159,7 @@ const askDelete = (row) => {
 
 const confirmDelete = async () => {
   await deleteBorrow(deletingItem.value._id)
-  toast.success('Xóa phiếu mượn thành công!')
+  toast.success('Xóa thành công!')
   showConfirm.value = false
   loadBorrows()
 }

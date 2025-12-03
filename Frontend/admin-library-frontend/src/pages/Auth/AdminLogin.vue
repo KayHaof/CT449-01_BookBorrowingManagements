@@ -85,8 +85,7 @@ const handleLogin = async () => {
       return
     }
 
-    // Lưu session admin
-    localStorage.setItem('admin', JSON.stringify(res.user))
+    localStorage.setItem('user', JSON.stringify(res.user))
 
     // Chuyển về Dashboard Admin
     router.push('/admin')
