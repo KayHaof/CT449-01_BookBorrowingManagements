@@ -13,4 +13,4 @@ const DocGiaSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("DocGia", DocGiaSchema);
+module.exports = mongoose.model("DocGia", DocGiaSchema, "DocGia");

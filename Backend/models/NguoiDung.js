@@ -10,9 +10,10 @@ const NguoiDungSchema = new mongoose.Schema(
             enum: ["DocGia", "NhanVien", "Admin"],
             default: "DocGia",
         },
-        refId: { type: mongoose.Schema.Types.ObjectId, refPath: "vaiTro" },
+        
+        refId: { type: mongoose.Schema.Types.ObjectId, default: null },
     },
     { timestamps: true }
 );
 
-module.exports = mongoose.model("NguoiDung", NguoiDungSchema);
+module.exports = mongoose.model("NguoiDung", NguoiDungSchema, "NguoiDung");

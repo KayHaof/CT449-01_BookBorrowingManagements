@@ -54,4 +54,17 @@ const remove = async (req, res) => {
     }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+const countActiveBorrows = async (req, res) => {
+    try {
+        const count = await Borrow.countDocuments({
+            maDocGia: req.params.readerId,
+            trangThai: "dang_muon",
+        });
+
+        res.json({ count });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+module.exports = { getAll, getById, create, update, remove, countActiveBorrows };

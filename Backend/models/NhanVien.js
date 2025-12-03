@@ -12,4 +12,4 @@ const NhanVienSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("NhanVien", NhanVienSchema);
+module.exports = mongoose.model("NhanVien", NhanVienSchema, "NhanVien");

@@ -15,4 +15,4 @@ const PhieuPhatSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("PhieuPhat", PhieuPhatSchema);
+module.exports = mongoose.model("PhieuPhat", PhieuPhatSchema, "PhieuPhat");

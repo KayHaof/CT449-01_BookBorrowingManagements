@@ -9,4 +9,4 @@ const PhanLoaiSachSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("PhanLoaiSach", PhanLoaiSachSchema);
+module.exports = mongoose.model("PhanLoaiSach", PhanLoaiSachSchema, "PhanLoaiSach");

@@ -21,4 +21,4 @@ const SachSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("Sach", SachSchema);
+module.exports = mongoose.model("Sach", SachSchema, "Sach");

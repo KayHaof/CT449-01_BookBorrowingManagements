@@ -27,8 +27,16 @@ const getById = async (req, res) => {
 
 const create = async (req, res) => {
     try {
-        const book = new Book(req.body);
+        let data = req.body;
+
+        // Nếu có upload ảnh
+        if (req.file) {
+            data.biaSach = "/assets/" + req.file.filename;
+        }
+
+        const book = new Book(data);
         await book.save();
+
         res.status(201).json(book);
     } catch (err) {
         res.status(400).json({ message: err.message });
@@ -37,9 +45,17 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
     try {
-        const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
+        let data = req.body;
+
+        // Nếu có ảnh mới → thay ảnh
+        if (req.file) {
+            data.biaSach = "/assets/images/" + req.file.filename;
+        }
+
+        const book = await Book.findByIdAndUpdate(req.params.id, data, {
             new: true,
         });
+
         res.json(book);
     } catch (err) {
         res.status(400).json({ message: err.message });

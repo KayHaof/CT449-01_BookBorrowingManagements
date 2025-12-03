@@ -8,6 +8,7 @@ const {
     create,
     update,
     remove,
+    countActiveBorrows,
 } = require("../controllers/borrowController");
 
 router.get("/", async (req, res) => {
@@ -44,5 +45,7 @@ router.put("/:id", update);
 
 // DELETE
 router.delete("/:id", remove);
+
+router.get("/count/:readerId", countActiveBorrows);
 
 module.exports = router;

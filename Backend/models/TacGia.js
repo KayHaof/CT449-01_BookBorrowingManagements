@@ -10,4 +10,4 @@ const TacGiaSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("TacGia", TacGiaSchema);
+module.exports = mongoose.model("TacGia", TacGiaSchema, "TacGia");

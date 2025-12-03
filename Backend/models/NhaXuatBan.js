@@ -9,4 +9,4 @@ const NhaXuatBanSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("NhaXuatBan", NhaXuatBanSchema);
+module.exports = mongoose.model("NhaXuatBan", NhaXuatBanSchema, "NhaXuatBan");
