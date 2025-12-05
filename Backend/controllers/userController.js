@@ -45,6 +45,17 @@ const update = async (req, res) => {
 };
 
 // XOÁ USER
+
+const getByRef = async (req, res) => {
+    try {
+        const user = await User.findOne({ refId: req.params.refId });
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 const remove = async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
@@ -103,4 +114,12 @@ const changePassword = async (req, res) => {
     }
 };
 
-module.exports = { getAll, getById, create, update, remove, changePassword };
+module.exports = {
+    getAll,
+    getById,
+    create,
+    update,
+    remove,
+    changePassword,
+    getByRef,
+};

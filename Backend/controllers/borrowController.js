@@ -11,6 +11,18 @@ const getAll = async (req, res) => {
     }
 };
 
+const getByUser = async (req, res) => {
+    try {
+        const borrows = await Borrow.find({ maDocGia: req.params.userId })
+            .populate("maDocGia")
+            .populate("maSach");
+
+        res.json(borrows);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 const getById = async (req, res) => {
     try {
         const borrow = await Borrow.findById(req.params.id)
@@ -38,49 +50,48 @@ const update = async (req, res) => {
     try {
         const { trangThai } = req.body;
 
-        const oldBorrow = await Borrow.findById(req.params.id);
+        const oldBorrow = await Borrow.findById(req.params.id)
+            .populate("maDocGia")
+            .populate("maSach");
 
+        if (!oldBorrow) {
+            return res.status(404).json({ message: "Borrow not found" });
+        }
+
+        // Cập nhật phiếu mượn
         const borrow = await Borrow.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
-        });
+        })
+            .populate("maDocGia")
+            .populate("maSach");
 
-        // Chỉ khi trạng thái cũ KHÁC "da_tra" và trạng thái mới LÀ "da_tra"
-        if (
-            oldBorrow.trangThai !== "da_tra" &&
-            req.body.trangThai === "da_tra"
-        ) {
+        // Nếu chuyển sang ĐÃ TRẢ → tăng số lượng sách
+        if (oldBorrow.trangThai !== "da_tra" && trangThai === "da_tra") {
             const Book = require("../models/Sach");
-            await Book.findByIdAndUpdate(borrow.maSach, {
+            await Book.findByIdAndUpdate(borrow.maSach._id, {
                 $inc: { soQuyen: 1 },
             });
         }
 
-        res.json(borrow);
-
-        res.json(borrow);
-
-        if (!borrow) {
-            return res.status(404).json({ message: "Borrow not found" });
-        }
-
-        // 🔥 Emit realtime tới tất cả client đang mở trang BorrowHistory
+        // Emit realtime
         if (global._io) {
             global._io.emit("borrow_updated", borrow);
         }
 
-        // 🔥 Nếu chuyển sang trễ hạn → FE hiểu là phải tạo phiếu phạt
+        // Nếu chuyển sang TRỄ HẠN → FE lập phiếu phạt
         if (trangThai === "tre_han") {
             return res.json({
-                message:
-                    "Phiếu mượn đã chuyển sang trạng thái TRỄ HẠN. Độc giả cần nộp phạt.",
-                borrow,
                 requireFine: true,
+                message: "Phiếu mượn đã chuyển sang TRỄ HẠN.",
+                borrow,
             });
         }
 
-        res.json(borrow);
+        // Mặc định trả borrow
+        return res.json(borrow);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        console.error("Lỗi update borrow:", err);
+        return res.status(400).json({ message: err.message });
     }
 };
 
@@ -113,4 +124,5 @@ module.exports = {
     update,
     remove,
     countActiveBorrows,
+    getByUser,
 };

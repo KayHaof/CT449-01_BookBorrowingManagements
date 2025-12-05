@@ -9,18 +9,20 @@ const {
     update,
     remove,
     countActiveBorrows,
+    getByUser,
 } = require("../controllers/borrowController");
 
+// GET /borrows?maDocGia=&maSach=
 router.get("/", async (req, res) => {
     try {
         const { maDocGia, maSach } = req.query;
         const query = {};
 
         if (maDocGia && mongoose.isValidObjectId(maDocGia)) {
-            query.maDocGia = new mongoose.Types.ObjectId(maDocGia);
+            query.maDocGia = maDocGia;
         }
         if (maSach && mongoose.isValidObjectId(maSach)) {
-            query.maSach = new mongoose.Types.ObjectId(maSach);
+            query.maSach = maSach;
         }
 
         const borrows = await TheoDoiMuonSach.find(query)
@@ -34,6 +36,9 @@ router.get("/", async (req, res) => {
     }
 });
 
+// ⚠ MUST BE ABOVE /:id
+router.get("/user/:userId", getByUser);
+
 // GET BY ID
 router.get("/:id", getById);
 
@@ -46,6 +51,7 @@ router.put("/:id", update);
 // DELETE
 router.delete("/:id", remove);
 
+// COUNT ACTIVE BORROWS
 router.get("/count/:readerId", countActiveBorrows);
 
 module.exports = router;
