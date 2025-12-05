@@ -1,38 +1,38 @@
 <template>
   <AdminModal :title="editData ? 'Sửa độc giả' : 'Thêm độc giả'" @close="$emit('close')">
-    <form @submit.prevent="save">
+    <form @submit.prevent="save" class="reader-form">
       <AdminFormGroup label="Mã độc giả">
-        <input class="form-control" v-model="form.maDocGia" required />
+        <input class="form-control styled-input" v-model="form.maDocGia" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Họ lót">
-        <input class="form-control" v-model="form.hoLot" required />
+        <input class="form-control styled-input" v-model="form.hoLot" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Tên">
-        <input class="form-control" v-model="form.ten" required />
+        <input class="form-control styled-input" v-model="form.ten" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Giới tính">
-        <select class="form-control" v-model="form.phai">
+        <select class="form-control styled-input" v-model="form.phai">
           <option value="Nam">Nam</option>
           <option value="Nữ">Nữ</option>
         </select>
       </AdminFormGroup>
 
       <AdminFormGroup label="Ngày sinh">
-        <input type="date" class="form-control" v-model="form.ngaySinh" />
+        <input type="date" class="form-control styled-input" v-model="form.ngaySinh" />
       </AdminFormGroup>
 
       <AdminFormGroup label="Địa chỉ">
-        <input class="form-control" v-model="form.diaChi" />
+        <input class="form-control styled-input" v-model="form.diaChi" />
       </AdminFormGroup>
 
       <AdminFormGroup label="Điện thoại">
-        <input class="form-control" v-model="form.dienThoai" />
+        <input class="form-control styled-input" v-model="form.dienThoai" />
       </AdminFormGroup>
 
-      <button class="btn btn-primary w-100 mt-3">Lưu</button>
+      <button class="btn-submit w-100 mt-3">Lưu</button>
     </form>
   </AdminModal>
 </template>
@@ -49,7 +49,6 @@ const emit = defineEmits(['close', 'saved'])
 
 const { createReader, updateReader } = useReaders()
 
-// ⚡ Form mặc định
 const defaultForm = {
   maDocGia: '',
   hoLot: '',
@@ -60,14 +59,12 @@ const defaultForm = {
   dienThoai: '',
 }
 
-// ⚡ Reactive form
 const form = reactive({ ...defaultForm })
 
-// 🔥 Load dữ liệu khi sửa hoặc reset khi thêm mới
 watch(
   () => props.editData,
   (v) => {
-    Object.assign(form, defaultForm) // reset form
+    Object.assign(form, defaultForm)
 
     if (v) {
       form.maDocGia = v.maDocGia
@@ -99,3 +96,38 @@ const save = async () => {
   }
 }
 </script>
+<style scoped>
+.reader-form {
+  padding: 10px 2px;
+}
+
+/* ===== INPUT & SELECT ===== */
+.styled-input {
+  border: 1.5px solid #c8b6ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: 0.25s;
+}
+
+.styled-input:focus {
+  border-color: #7b5cff;
+  box-shadow: 0 0 6px rgba(123, 92, 255, 0.35);
+}
+
+/* ===== BUTTON LƯU ===== */
+.btn-submit {
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  border: none;
+  padding: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: white;
+  transition: 0.25s;
+}
+
+.btn-submit:hover {
+  opacity: 0.92;
+  box-shadow: 0 4px 14px rgba(123, 92, 255, 0.35);
+}
+</style>

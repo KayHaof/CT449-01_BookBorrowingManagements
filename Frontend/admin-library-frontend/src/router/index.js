@@ -1,18 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-// =============================
-// ADMIN LAYOUT
-// =============================
 import AdminLayout from '../layouts/AdminLayout.vue'
 
-// =============================
-// ADMIN AUTH PAGE
-// =============================
 import AdminLogin from '../pages/Auth/AdminLogin.vue'
 
-// =============================
-// ADMIN PAGES
-// =============================
 import Dashboard from '../pages/Dashboard.vue'
 
 import BooksList from '../pages/Books/BooksList.vue'
@@ -42,11 +33,7 @@ import FinesForm from '../pages/Fines/FinesForm.vue'
 import UsersList from '../pages/Users/UsersList.vue'
 import UsersForm from '../pages/Users/UsersForm.vue'
 
-// =============================
-// ROUTES
-// =============================
 const routes = [
-  // 🔥 Login admin
   {
     path: '/admin/login',
     name: 'AdminLogin',
@@ -121,7 +108,6 @@ const routes = [
     ],
   },
 
-  // 404 → redirect admin
   {
     path: '/:pathMatch(.*)*',
     redirect: '/admin',
@@ -136,13 +122,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const admin = JSON.parse(localStorage.getItem('user'))
 
-  // Nếu vào route admin mà không login
   if (to.path.startsWith('/admin') && to.path !== '/admin/login') {
     if (!admin) {
       return next('/admin/login')
     }
 
-    // Check role
     if (admin.vaiTro !== 'Admin' && admin.vaiTro !== 'NhanVien') {
       return next('/admin/login')
     }

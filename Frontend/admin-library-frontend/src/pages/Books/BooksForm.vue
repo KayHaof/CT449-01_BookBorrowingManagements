@@ -1,83 +1,99 @@
 <template>
   <AdminModal :title="editData ? 'Sửa sách' : 'Thêm sách'" @close="$emit('close')">
-    <form @submit.prevent="save">
+    <form @submit.prevent="save" class="book-form">
+      <!-- ===== INPUT CƠ BẢN ===== -->
       <AdminFormGroup label="Mã sách">
-        <input class="form-control" v-model="form.maSach" required />
+        <input class="form-control styled-input" v-model="form.maSach" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Tên sách">
-        <input class="form-control" v-model="form.tenSach" required />
+        <input class="form-control styled-input" v-model="form.tenSach" required />
       </AdminFormGroup>
 
-      <AdminFormGroup label="Đơn giá">
-        <input type="number" class="form-control" v-model="form.donGia" />
-      </AdminFormGroup>
+      <div class="row">
+        <div class="col-md-6">
+          <AdminFormGroup label="Đơn giá">
+            <input type="number" class="form-control styled-input" v-model="form.donGia" />
+          </AdminFormGroup>
+        </div>
 
-      <AdminFormGroup label="Số quyển">
-        <input type="number" class="form-control" v-model="form.soQuyen" />
-      </AdminFormGroup>
+        <div class="col-md-6">
+          <AdminFormGroup label="Số quyển">
+            <input type="number" class="form-control styled-input" v-model="form.soQuyen" />
+          </AdminFormGroup>
+        </div>
+      </div>
 
       <AdminFormGroup label="Năm xuất bản">
-        <input type="number" class="form-control" v-model="form.namXuatBan" />
+        <input type="number" class="form-control styled-input" v-model="form.namXuatBan" />
       </AdminFormGroup>
 
-      <!-- ẢNH BÌA: đổi từ URL sang chọn file -->
+      <!-- ===== ẢNH BÌA ===== -->
       <AdminFormGroup label="Ảnh bìa">
-        <input type="file" class="form-control" accept="image/*" @change="onImageChange" />
-
-        <img
-          v-if="previewImage"
-          :src="getImageUrl(previewImage)"
-          class="img-thumbnail mt-2"
-          style="max-height: 150px"
+        <input
+          type="file"
+          class="form-control styled-input"
+          accept="image/*"
+          @change="onImageChange"
         />
+
+        <div v-if="previewImage" class="img-preview-wrapper">
+          <img :src="getImageUrl(previewImage)" class="img-preview" />
+        </div>
       </AdminFormGroup>
 
-      <!-- ====================== NXB ====================== -->
+      <!-- ===== NXB ===== -->
       <AdminFormGroup label="Nhà xuất bản">
         <div class="select-row">
-          <select class="form-select" v-model="form.maNhaXuatBan">
+          <select class="form-select styled-input" v-model="form.maNhaXuatBan">
             <option disabled value="">-- Chọn NXB --</option>
             <option v-for="p in publishers" :key="p._id" :value="p._id">
               {{ p.tenNXB }}
             </option>
           </select>
-
-          <button type="button" class="btn-add" @click="showPublisherForm = true">+</button>
+          <button type="button" class="btn-add">+</button>
         </div>
       </AdminFormGroup>
 
-      <!-- ====================== THỂ LOẠI ====================== -->
+      <!-- ===== THỂ LOẠI ===== -->
       <AdminFormGroup label="Thể loại">
         <div class="select-row">
-          <select class="form-select" v-model="form.maPhanLoai">
+          <select class="form-select styled-input" v-model="form.maPhanLoai">
             <option disabled value="">-- Chọn thể loại --</option>
             <option v-for="c in categories" :key="c._id" :value="c._id">
               {{ c.tenLoai }}
             </option>
           </select>
-
           <button type="button" class="btn-add" @click="showCategoryForm = true">+</button>
         </div>
       </AdminFormGroup>
 
-      <!-- ====================== TÁC GIẢ ====================== -->
+      <!-- ===== TÁC GIẢ ===== -->
       <AdminFormGroup label="Tác giả" data-full>
-        <div class="select-row">
-          <select class="form-select author-select" v-model="form.maTacGia" multiple>
-            <option v-for="a in authors" :key="a._id" :value="a._id">
-              {{ a.hoTen }}
-            </option>
-          </select>
+        <div class="select-row align-items-start">
+          <div class="author-checkbox-list">
+            <div v-for="a in authors" :key="a._id" class="form-check mb-1">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                :value="a._id"
+                v-model="form.maTacGia"
+                :id="'author-' + a._id"
+              />
+              <label class="form-check-label" :for="'author-' + a._id">
+                {{ a.hoTen }}
+              </label>
+            </div>
+          </div>
 
           <button type="button" class="btn-add" @click="showAuthorForm = true">+</button>
         </div>
       </AdminFormGroup>
 
-      <button class="btn btn-primary w-100 mt-3">Lưu</button>
+      <button class="btn-submit w-100 mt-3">Lưu sách</button>
     </form>
 
-    <!-- ====================== MODALS ====================== -->
+    <!-- POPUP -->
     <AdminModal v-if="showPublisherForm" title="Thêm NXB" @close="closePublisher">
       <PublishersForm @saved="afterAddPublisher" @close="closePublisher" />
     </AdminModal>
@@ -214,7 +230,6 @@ const save = async () => {
   try {
     const fd = new FormData()
 
-    // add all normal fields
     fd.append('maSach', form.maSach)
     fd.append('tenSach', form.tenSach)
     fd.append('donGia', form.donGia)
@@ -223,16 +238,12 @@ const save = async () => {
     fd.append('maNhaXuatBan', form.maNhaXuatBan)
     fd.append('maPhanLoai', form.maPhanLoai)
 
-    // array maTacGia[]
-    form.maTacGia.forEach((id) => {
-      fd.append('maTacGia[]', id)
-    })
+    fd.append('maTacGia', JSON.stringify(form.maTacGia))
 
-    // ảnh nếu có
+    // ảnh upload
     if (selectedImage.value) {
       fd.append('biaSach', selectedImage.value)
     } else if (form.biaSach) {
-      // nếu đang chỉnh sửa mà không đổi ảnh
       fd.append('biaSach', form.biaSach)
     }
 
@@ -254,25 +265,88 @@ const save = async () => {
 </script>
 
 <style scoped>
+.book-form {
+  padding: 10px 2px;
+}
+
+/* INPUT + SELECT + FILE */
+.styled-input {
+  border: 1.5px solid #c8b6ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: 0.25s;
+}
+
+.styled-input:focus {
+  border-color: #7b5cff;
+  box-shadow: 0 0 6px rgba(123, 92, 255, 0.35);
+}
+
+/* BUTTON THÊM MỚI */
+.btn-add {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.btn-add:hover {
+  transform: scale(1.07);
+  box-shadow: 0 4px 10px rgba(123, 92, 255, 0.4);
+}
+
+/* CHECKBOX LIST */
+.author-checkbox-list {
+  flex: 1;
+  border: 1px solid #c8b6ff;
+  border-radius: 10px;
+  padding: 8px 12px;
+  max-height: 180px;
+  overflow-y: auto;
+  background: #ffffff;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.06);
+}
+
+/* SELECT + BUTTON ALIGN */
 .select-row {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.btn-add {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: #fff;
-  border: 1px solid #7b5cff;
-  color: #7b5cff;
-  font-size: 20px;
-  padding-bottom: 3px;
-  cursor: pointer;
-  transition: 0.2s;
+/* HÌNH ẢNH PREVIEW */
+.img-preview-wrapper {
+  margin-top: 10px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid #c8b6ff;
+  background: #faf7ff;
 }
-.btn-add:hover {
-  background: #f2eaff;
+
+.img-preview {
+  max-height: 160px;
+  border-radius: 8px;
+}
+
+/* SUBMIT BUTTON */
+.btn-submit {
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  border: none;
+  padding: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: white;
+  transition: 0.25s;
+}
+
+.btn-submit:hover {
+  opacity: 0.9;
+  box-shadow: 0 4px 14px rgba(123, 92, 255, 0.4);
 }
 </style>

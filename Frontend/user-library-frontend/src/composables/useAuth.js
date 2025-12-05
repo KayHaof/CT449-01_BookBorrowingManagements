@@ -11,9 +11,6 @@ export function useAuth() {
   const isLoading = ref(false)
   const showPassword = ref(false)
 
-  // -------------------------------
-  // FORM LOGIN
-  // -------------------------------
   const loginData = ref({
     tenDangNhap: '',
     password: '',
@@ -40,9 +37,6 @@ export function useAuth() {
     }
   }
 
-  // -------------------------------
-  // FORM REGISTER (đã có từ trước)
-  // -------------------------------
   const registerData = ref({
     hoLot: '',
     ten: '',
@@ -52,10 +46,17 @@ export function useAuth() {
     dienThoai: '',
     tenDangNhap: '',
     matKhau: '',
+    xacNhanMatKhau: '',
   })
 
   const handleRegister = async () => {
     isLoading.value = true
+
+    if (registerData.value.matKhau !== registerData.value.xacNhanMatKhau) {
+      toast.error('Mật khẩu không khớp!')
+      isLoading.value = false
+      return
+    }
 
     try {
       const maDG = 'DG' + Date.now()

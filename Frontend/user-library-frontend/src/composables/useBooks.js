@@ -2,9 +2,6 @@ import { ref, computed } from 'vue'
 import axios from 'axios'
 
 export function useBookService() {
-  /* =======================================================
-   *  STATE BOOKS
-   * =======================================================*/
   const allBooks = ref([])
 
   const newestBooks = ref([])
@@ -12,35 +9,25 @@ export function useBookService() {
 
   const searchResults = ref([])
 
-  // ⭐ Chi tiết sách
   const bookDetail = ref(null)
   const loadingBookDetail = ref(false)
   const errorBookDetail = ref(null)
 
-  /* =======================================================
-   *  LOAD TẤT CẢ SÁCH CHO HOME + SEARCH
-   * =======================================================*/
   const loadHomeBooks = async () => {
     try {
       const res = await axios.get('/api/books')
       const books = Array.isArray(res.data) ? res.data : []
 
       allBooks.value = books
-
-      // === NEWEST ===
       const sorted = [...books].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       newestBooks.value = sorted.slice(0, 4)
 
-      // === SUGGESTION: random ===
       suggestionBooks.value = [...books].sort(() => 0.5 - Math.random()).slice(0, 4)
     } catch (err) {
       console.error('Lỗi load sách:', err)
     }
   }
 
-  /* =======================================================
-   *  SEARCH LOCAL TRONG FE
-   * =======================================================*/
   const searchBooks = (keyword) => {
     if (!keyword || keyword.trim() === '') {
       searchResults.value = []
@@ -59,9 +46,6 @@ export function useBookService() {
     })
   }
 
-  /* =======================================================
-   *  LẤY CHI TIẾT SÁCH
-   * =======================================================*/
   const getBookById = async (id) => {
     loadingBookDetail.value = true
     bookDetail.value = null
@@ -78,9 +62,6 @@ export function useBookService() {
     }
   }
 
-  /* =======================================================
-   *  CHECK MƯỢN + MƯỢN SÁCH
-   * =======================================================*/
   const checkBorrowStatus = async (maDocGia, maSach) => {
     try {
       const res = await axios.get('/api/borrows', {
@@ -121,9 +102,6 @@ export function useBookService() {
     }
   }
 
-  /* =======================================================
-   *  UPDATE SỐ LƯỢNG SAU KHI MƯỢN
-   * =======================================================*/
   const updateBookQuantity = async (bookId, newQuantity) => {
     try {
       const res = await axios.put(`/api/books/${bookId}`, {
@@ -136,9 +114,6 @@ export function useBookService() {
     }
   }
 
-  /* =======================================================
-   *  FILTER + SORT + PAGINATION CHO TRANG LIST SÁCH
-   * =======================================================*/
   const searchQuery = ref('')
   const selectedCategory = ref('')
   const sortBy = ref('recent')

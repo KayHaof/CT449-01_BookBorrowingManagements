@@ -8,7 +8,6 @@ export const api = axios.create({
 export function useApiService() {
   const getBooks = (params = {}) => api.get('/books', { params })
 
-  // 🔥 FIX CHÍNH Ở ĐÂY
   const getBorrowHistory = (userId) => api.get(`/borrows/user/${userId}`)
 
   return { getBooks, getBorrowHistory }

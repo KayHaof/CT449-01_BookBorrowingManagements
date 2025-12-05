@@ -36,7 +36,6 @@ router.get("/", async (req, res) => {
     }
 });
 
-// ⚠ MUST BE ABOVE /:id
 router.get("/user/:userId", getByUser);
 
 // GET BY ID
@@ -51,7 +50,6 @@ router.put("/:id", update);
 // DELETE
 router.delete("/:id", remove);
 
-// COUNT ACTIVE BORROWS
 router.get("/count/:readerId", countActiveBorrows);
 
 module.exports = router;

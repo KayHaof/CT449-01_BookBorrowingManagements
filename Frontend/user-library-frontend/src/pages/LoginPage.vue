@@ -4,13 +4,6 @@
       <h1 class="auth-title">Đăng Nhập</h1>
       <p class="auth-subtitle">Chào mừng bạn trở lại</p>
 
-      <!-- ERROR MESSAGE -->
-      <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show">
-        <i class="fa-solid fa-circle-exclamation me-2"></i>
-        {{ errorMessage }}
-        <button type="button" class="btn-close" @click="errorMessage = ''"></button>
-      </div>
-
       <form @submit.prevent="handleLogin" class="mt-4">
         <div class="mb-3">
           <label class="auth-label">Tên đăng nhập</label>

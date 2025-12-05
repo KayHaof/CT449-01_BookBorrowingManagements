@@ -1,28 +1,28 @@
 <template>
   <AdminModal :title="editData ? 'Sửa phiếu mượn' : 'Tạo phiếu mượn'" @close="$emit('close')">
-    <form @submit.prevent="save">
+    <form @submit.prevent="save" class="borrow-form">
       <AdminFormGroup label="Mã phiếu mượn">
-        <input class="form-control" v-model="form.maMuon" required />
+        <input class="form-control styled-input" v-model="form.maMuon" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Độc giả (ID)">
-        <input class="form-control" v-model="form.maDocGia" required />
+        <input class="form-control styled-input" v-model="form.maDocGia" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Sách (ID)">
-        <input class="form-control" v-model="form.maSach" required />
+        <input class="form-control styled-input" v-model="form.maSach" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Ngày mượn">
-        <input type="date" class="form-control" v-model="form.ngayMuon" required />
+        <input type="date" class="form-control styled-input" v-model="form.ngayMuon" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Ngày trả">
-        <input type="date" class="form-control" v-model="form.ngayTra" />
+        <input type="date" class="form-control styled-input" v-model="form.ngayTra" />
       </AdminFormGroup>
 
       <AdminFormGroup label="Trạng thái">
-        <select class="form-control" v-model="form.trangThai">
+        <select class="form-control styled-input" v-model="form.trangThai">
           <option value="dang_ky_muon">Đang đăng ký mượn</option>
           <option value="dang_muon">Đang mượn</option>
           <option value="da_tra">Đã trả</option>
@@ -30,7 +30,7 @@
         </select>
       </AdminFormGroup>
 
-      <button class="btn btn-primary w-100 mt-3">Lưu</button>
+      <button class="btn-submit w-100 mt-3">Lưu</button>
     </form>
   </AdminModal>
 </template>
@@ -77,7 +77,6 @@ watch(
   { immediate: true },
 )
 
-// Auto set ngày trả cho “đã trả” hoặc “trễ hạn”
 watch(
   () => form.trangThai,
   (value) => {
@@ -107,8 +106,7 @@ const save = async () => {
 
     // Tạo phiếu phạt nếu trễ hạn
     if (form.trangThai === 'tre_han') {
-      const borrow = updated // <-- lấy đúng object trả về từ server
-
+      const borrow = updated
       emit('create-fine', {
         maMuonSach: borrow._id,
         ngayMuon: borrow.ngayMuon,
@@ -123,3 +121,39 @@ const save = async () => {
   }
 }
 </script>
+
+<style scoped>
+.borrow-form {
+  padding: 10px 2px;
+}
+
+/* INPUT + SELECT + DATE */
+.styled-input {
+  border: 1.5px solid #c8b6ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: 0.25s;
+}
+
+.styled-input:focus {
+  border-color: #7b5cff;
+  box-shadow: 0 0 6px rgba(123, 92, 255, 0.35);
+}
+
+/* ===== BUTTON LƯU ===== */
+.btn-submit {
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  border: none;
+  padding: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: white;
+  transition: 0.25s;
+}
+
+.btn-submit:hover {
+  opacity: 0.92;
+  box-shadow: 0 4px 14px rgba(123, 92, 255, 0.35);
+}
+</style>

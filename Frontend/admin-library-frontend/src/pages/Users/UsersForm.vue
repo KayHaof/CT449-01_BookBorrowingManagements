@@ -3,27 +3,27 @@
     :title="editData ? 'Sửa tài khoản Admin' : 'Thêm tài khoản Admin'"
     @close="$emit('close')"
   >
-    <form @submit.prevent="save">
-      <!-- Mã ND (chỉ khi tạo mới) -->
+    <form @submit.prevent="save" class="admin-user-form">
+      <!-- Mã ND (chỉ khi tạo) -->
       <AdminFormGroup v-if="!editData" label="Mã người dùng">
-        <input class="form-control" v-model="form.maND" required />
+        <input class="form-control styled-input" v-model="form.maND" required />
       </AdminFormGroup>
 
       <!-- Username -->
       <AdminFormGroup label="Tên đăng nhập">
-        <input class="form-control" v-model="form.tenDangNhap" required />
+        <input class="form-control styled-input" v-model="form.tenDangNhap" required />
       </AdminFormGroup>
 
-      <!-- Mật khẩu + nút hiện ẩn -->
+      <!-- Mật khẩu -->
       <AdminFormGroup label="Mật khẩu">
-        <div class="input-group">
+        <div class="input-group gradient-input-group">
           <input
-            class="form-control"
+            class="form-control styled-input no-right-radius"
             :type="showPass ? 'text' : 'password'"
             v-model="form.matKhau"
             required
           />
-          <button class="btn btn-outline-secondary" type="button" @click="togglePass">
+          <button class="btn toggle-btn" type="button" @click="togglePass">
             <i :class="showPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
           </button>
         </div>
@@ -33,7 +33,7 @@
       <input type="hidden" v-model="form.vaiTro" />
       <input type="hidden" v-model="form.refId" />
 
-      <button class="btn btn-primary w-100 mt-3">Lưu</button>
+      <button class="btn-submit w-100 mt-3">Lưu</button>
     </form>
   </AdminModal>
 </template>
@@ -50,11 +50,9 @@ const emit = defineEmits(['close', 'saved'])
 
 const { createUser, updateUser } = useUsers()
 
-// toggle mật khẩu
 const showPass = ref(false)
 const togglePass = () => (showPass.value = !showPass.value)
 
-// Form mặc định
 const form = reactive({
   maND: '',
   tenDangNhap: '',
@@ -63,7 +61,6 @@ const form = reactive({
   refId: '',
 })
 
-// load dữ liệu khi sửa
 watch(
   () => props.editData,
   (v) => {
@@ -80,7 +77,6 @@ watch(
 const save = async () => {
   try {
     if (props.editData) {
-      // Sửa admin
       await updateUser(props.editData._id, {
         tenDangNhap: form.tenDangNhap,
         matKhau: form.matKhau,
@@ -88,7 +84,6 @@ const save = async () => {
 
       toast.success('Cập nhật tài khoản Admin thành công!')
     } else {
-      // Tạo admin mới
       await createUser(form)
       toast.success('Tạo tài khoản Admin thành công!')
     }
@@ -102,7 +97,57 @@ const save = async () => {
 </script>
 
 <style scoped>
-.input-group button {
-  border-radius: 0 0.375rem 0.375rem 0 !important;
+.admin-user-form {
+  padding: 10px 2px;
+}
+
+/* ===== INPUT ===== */
+.styled-input {
+  border: 1.5px solid #c8b6ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: 0.25s;
+}
+
+.styled-input:focus {
+  border-color: #7b5cff;
+  box-shadow: 0 0 6px rgba(123, 92, 255, 0.35);
+}
+
+/* Input khi nằm trong input-group */
+.no-right-radius {
+  border-right: none !important;
+  border-radius: 10px 0 0 10px !important;
+}
+
+/* ===== BUTTON HIỆN/ẨN MẬT KHẨU ===== */
+.gradient-input-group .toggle-btn {
+  border-radius: 0 10px 10px 0 !important;
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  color: white;
+  border: none;
+  padding: 0 14px;
+  transition: 0.25s;
+}
+
+.gradient-input-group .toggle-btn:hover {
+  opacity: 0.9;
+}
+
+/* ===== BUTTON SUBMIT ===== */
+.btn-submit {
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  border: none;
+  padding: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: white;
+  transition: 0.25s;
+}
+
+.btn-submit:hover {
+  opacity: 0.92;
+  box-shadow: 0 4px 14px rgba(123, 92, 255, 0.35);
 }
 </style>

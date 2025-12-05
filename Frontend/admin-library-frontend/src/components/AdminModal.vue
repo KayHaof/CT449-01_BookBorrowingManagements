@@ -35,7 +35,7 @@ defineProps({ title: String })
 .modal-box {
   background: #fff;
   width: 90%;
-  max-width: 850px; /* ⭐ rộng đẹp hơn */
+  max-width: 850px;
   max-height: 85vh;
   border-radius: 14px;
   overflow: hidden;

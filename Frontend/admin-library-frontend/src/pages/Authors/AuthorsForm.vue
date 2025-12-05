@@ -1,15 +1,15 @@
 <template>
   <AdminModal :title="editData ? 'Sửa tác giả' : 'Thêm tác giả'" @close="$emit('close')">
-    <form @submit.prevent="save">
+    <form @submit.prevent="save" class="author-form">
       <AdminFormGroup label="Mã tác giả">
-        <input class="form-control" v-model="form.maTacGia" required />
+        <input class="form-control styled-input" v-model="form.maTacGia" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Họ tên">
-        <input class="form-control" v-model="form.hoTen" required />
+        <input class="form-control styled-input" v-model="form.hoTen" required />
       </AdminFormGroup>
 
-      <button class="btn btn-primary w-100 mt-3">Lưu</button>
+      <button class="btn-submit w-100 mt-3">Lưu</button>
     </form>
   </AdminModal>
 </template>
@@ -26,16 +26,13 @@ const emit = defineEmits(['close', 'saved'])
 
 const { createAuthor, updateAuthor } = useAuthors()
 
-// ⚡ Default form
 const defaultForm = {
   maTacGia: '',
   hoTen: '',
 }
 
-// ⚡ Reactive form
 const form = reactive({ ...defaultForm })
 
-// 🔥 Khi mở modal → load hoặc reset form
 watch(
   () => props.editData,
   (v) => {
@@ -66,3 +63,38 @@ const save = async () => {
   }
 }
 </script>
+<style scoped>
+.author-form {
+  padding: 8px 2px;
+}
+
+/* ===== INPUT ===== */
+.styled-input {
+  border: 1.5px solid #c8b6ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: 0.25s;
+}
+
+.styled-input:focus {
+  border-color: #7b5cff;
+  box-shadow: 0 0 6px rgba(123, 92, 255, 0.35);
+}
+
+/* ===== BUTTON LƯU ===== */
+.btn-submit {
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  border: none;
+  padding: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: white;
+  transition: 0.25s;
+}
+
+.btn-submit:hover {
+  opacity: 0.92;
+  box-shadow: 0 4px 14px rgba(123, 92, 255, 0.35);
+}
+</style>

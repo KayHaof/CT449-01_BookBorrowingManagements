@@ -1,6 +1,5 @@
 const User = require("../models/NguoiDung");
 
-// LẤY TẤT CẢ USER
 const getAll = async (req, res) => {
     try {
         const users = await User.find().populate("refId");
@@ -10,7 +9,6 @@ const getAll = async (req, res) => {
     }
 };
 
-// LẤY USER THEO ID
 const getById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id).populate("refId");
@@ -21,7 +19,6 @@ const getById = async (req, res) => {
     }
 };
 
-// TẠO USER
 const create = async (req, res) => {
     try {
         const user = new User(req.body);
@@ -32,7 +29,6 @@ const create = async (req, res) => {
     }
 };
 
-// CẬP NHẬT USER
 const update = async (req, res) => {
     try {
         const user = await User.findByIdAndUpdate(req.params.id, req.body, {
@@ -43,8 +39,6 @@ const update = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
-
-// XOÁ USER
 
 const getByRef = async (req, res) => {
     try {
@@ -65,9 +59,6 @@ const remove = async (req, res) => {
     }
 };
 
-/* ==========================================
-   🔥  API ĐỔI MẬT KHẨU (KHÔNG HASH)
-   ========================================== */
 const changePassword = async (req, res) => {
     try {
         const { userId, currentPassword, newPassword } = req.body;
@@ -78,14 +69,12 @@ const changePassword = async (req, res) => {
             });
         }
 
-        // Kiểm tra độ dài mật khẩu mới
         if (newPassword.length < 6) {
             return res.status(400).json({
                 message: "Mật khẩu mới phải có ít nhất 6 ký tự.",
             });
         }
 
-        // Lấy user
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({
@@ -93,14 +82,12 @@ const changePassword = async (req, res) => {
             });
         }
 
-        // Kiểm tra mật khẩu hiện tại khớp hay không
         if (user.matKhau !== currentPassword) {
             return res.status(400).json({
                 message: "Mật khẩu hiện tại không đúng.",
             });
         }
 
-        // Cập nhật mật khẩu
         user.matKhau = newPassword;
         await user.save();
 

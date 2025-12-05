@@ -11,10 +11,8 @@ connectDB();
 
 const app = express();
 
-// --- Tạo HTTP server để gắn socket ---
 const server = http.createServer(app);
 
-// --- Khởi tạo socket.io ---
 const io = new Server(server, {
     cors: {
         origin: "*",
@@ -22,10 +20,8 @@ const io = new Server(server, {
     },
 });
 
-// Lưu socket.io vào global để controller dùng được
 global._io = io;
 
-// Lắng nghe client kết nối
 io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
 
@@ -53,7 +49,6 @@ app.use("/api/readers", require("./routes/readers"));
 app.use("/api/staffs", require("./routes/staffs"));
 app.use("/api/users", require("./routes/users"));
 
-// --- Start server bằng server.listen ---
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () =>
     console.log(`=> Server running with SOCKET.IO on port ${PORT}`)

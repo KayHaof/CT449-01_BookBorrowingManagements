@@ -118,7 +118,6 @@ const statusClass = (s) =>
   })[s]
 
 const buildCharts = (borrows) => {
-  /* ---------------- LINE CHART ---------------- */
   const months = Array(12).fill(0)
   borrows.forEach((b) => {
     if (!b.ngayMuon) return
@@ -145,11 +144,10 @@ const buildCharts = (borrows) => {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false, // CHO PHÉP FILL THEO WRAPPER
+      maintainAspectRatio: false,
     },
   })
 
-  /* ---------------- PIE CHART ---------------- */
   const statusCount = { dang_ky_muon: 0, dang_muon: 0, da_tra: 0, tre_han: 0 }
   borrows.forEach((b) => {
     if (statusCount[b.trangThai] != null) statusCount[b.trangThai]++
@@ -170,7 +168,9 @@ const buildCharts = (borrows) => {
             statusCount.da_tra,
             statusCount.tre_han,
           ],
-          backgroundColor: ['#93c5fd', '#6ee7b7', '#e5e7eb', '#fecaca'],
+          backgroundColor: ['#60a5fa', '#34d399', '#cbd5e1', '#ef4444'],
+          borderWidth: 2,
+          borderColor: '#fff',
         },
       ],
     },
@@ -212,14 +212,12 @@ onMounted(async () => {
   background: #f8fafc;
 }
 
-/* Title */
 .dashboard-title {
   font-size: 28px;
   font-weight: 700;
   color: #111827;
 }
 
-/* STAT CARD */
 .stat-card {
   background: white;
   border-radius: 18px;
@@ -259,13 +257,11 @@ onMounted(async () => {
   font-size: 14px;
 }
 
-/* SECTION CARD */
 .section-card {
   border: 1px solid #e5e7eb;
   background: white;
 }
 
-/* TABLE */
 .dashboard-table thead {
   background: #f1f5f9;
 }
@@ -279,7 +275,6 @@ onMounted(async () => {
   color: #334155;
 }
 
-/* STATUS BADGES */
 .badge-status {
   padding: 6px 10px;
   border-radius: 8px;
@@ -307,7 +302,6 @@ onMounted(async () => {
   color: #b91c1c;
 }
 
-/* CHART AREA FIX */
 .chart-card {
   border-radius: 20px;
   border: 1px solid #e5e7eb;
@@ -324,7 +318,6 @@ onMounted(async () => {
   height: 100% !important;
 }
 
-/* Section title */
 .section-title {
   font-size: 18px;
   font-weight: 700;

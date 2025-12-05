@@ -4,8 +4,6 @@
 
     <div class="d-flex align-items-center gap-3">
       <div class="admin-avatar">A</div>
-
-      <!-- NÚT LOGOUT -->
       <button class="btn btn-outline-danger btn-sm" @click="logout">
         <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
       </button>

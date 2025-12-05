@@ -11,8 +11,7 @@ export default function useProfile() {
   const passwordError = ref('')
   const passwordSuccess = ref('')
 
-  const editLoading = ref(false) // ⚠️ BẮT BUỘC PHẢI KHAI BÁO
-
+  const editLoading = ref(false)
   const stats = ref({
     tongMuon: 0,
     dangMuon: 0,
@@ -146,7 +145,6 @@ export default function useProfile() {
 
       editLoading.value = true
 
-      // convert day
       if (newData.ngaySinh) {
         newData.ngaySinh = new Date(newData.ngaySinh).toISOString()
       }

@@ -58,14 +58,12 @@ const update = async (req, res) => {
             return res.status(404).json({ message: "Borrow not found" });
         }
 
-        // Cập nhật phiếu mượn
         const borrow = await Borrow.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
         })
             .populate("maDocGia")
             .populate("maSach");
 
-        // Nếu chuyển sang ĐÃ TRẢ → tăng số lượng sách
         if (oldBorrow.trangThai !== "da_tra" && trangThai === "da_tra") {
             const Book = require("../models/Sach");
             await Book.findByIdAndUpdate(borrow.maSach._id, {
@@ -73,12 +71,10 @@ const update = async (req, res) => {
             });
         }
 
-        // Emit realtime
         if (global._io) {
             global._io.emit("borrow_updated", borrow);
         }
 
-        // Nếu chuyển sang TRỄ HẠN → FE lập phiếu phạt
         if (trangThai === "tre_han") {
             return res.json({
                 requireFine: true,
@@ -87,7 +83,6 @@ const update = async (req, res) => {
             });
         }
 
-        // Mặc định trả borrow
         return res.json(borrow);
     } catch (err) {
         console.error("Lỗi update borrow:", err);

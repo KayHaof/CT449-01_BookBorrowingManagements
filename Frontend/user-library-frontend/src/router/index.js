@@ -14,9 +14,6 @@ import Profile from '../pages/Profile.vue'
 import BookDetail from '../pages/BookDetail.vue'
 
 const routes = [
-  // =============================
-  // USER LAYOUT
-  // =============================
   {
     path: '/',
     component: UserLayout,
@@ -42,9 +39,6 @@ const routes = [
     ],
   },
 
-  // =============================
-  // AUTH LAYOUT
-  // =============================
   {
     path: '/auth',
     component: AuthLayout,
@@ -54,9 +48,6 @@ const routes = [
     ],
   },
 
-  // =============================
-  // 404 PAGE
-  // =============================
   {
     path: '/:pathMatch(.*)*',
     redirect: '/',

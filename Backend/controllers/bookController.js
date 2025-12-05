@@ -29,7 +29,10 @@ const create = async (req, res) => {
     try {
         let data = req.body;
 
-        // Nếu có upload ảnh
+        if (data.maTacGia) {
+            data.maTacGia = JSON.parse(data.maTacGia);
+        }
+
         if (req.file) {
             data.biaSach = "/assets/" + req.file.filename;
         }
@@ -47,7 +50,10 @@ const update = async (req, res) => {
     try {
         let data = req.body;
 
-        // Nếu có ảnh mới → thay ảnh
+        if (data.maTacGia) {
+            data.maTacGia = JSON.parse(data.maTacGia);
+        }
+
         if (req.file) {
             data.biaSach = "/assets/images/" + req.file.filename;
         }

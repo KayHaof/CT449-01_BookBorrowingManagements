@@ -99,3 +99,38 @@ const confirmDelete = async () => {
 
 onMounted(loadAuthors)
 </script>
+
+<style scoped>
+/* ===== TITLE BAR ===== */
+h3.fw-bold {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #4b4b4b;
+}
+
+h3.fw-bold i {
+  font-size: 24px;
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== BUTTON: Thêm tác giả ===== */
+button.btn-primary {
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  border: none !important;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: 0.25s;
+  color: white;
+}
+
+button.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(123, 92, 255, 0.3);
+  opacity: 0.92;
+}
+</style>

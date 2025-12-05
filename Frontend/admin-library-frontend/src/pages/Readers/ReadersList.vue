@@ -9,7 +9,6 @@
 
     <!-- TABLE -->
     <AdminTable :columns="columns" :rows="pagedReaders" :disable-edit="true" @delete="askDelete">
-      <!-- ⭐ Ghi đè cột hành động bằng slot -->
       <template #actions="{ row }">
         <button class="btn btn-sm btn-info me-2" @click="openDetail(row)">Xem</button>
 
@@ -25,10 +24,8 @@
       @page-change="changePage"
     />
 
-    <!-- FORM (Thêm độc giả) -->
     <ReadersForm v-if="showForm" :editData="editing" @close="closeForm" @saved="loadReaders" />
 
-    <!-- DETAIL MODAL -->
     <teleport to="body">
       <ReaderDetailCard v-if="showDetail" :reader="selectedReader" @close="showDetail = false" />
     </teleport>
@@ -64,7 +61,6 @@ const { deleteUser } = useUsers()
 
 const readers = ref([])
 
-// FORM (Thêm mới)
 const showForm = ref(false)
 const editing = ref(null)
 
@@ -127,10 +123,7 @@ const askDelete = (row) => {
 const confirmDelete = async () => {
   const readerId = deletingItem.value._id
 
-  // 1. Xóa độc giả
   await deleteReader(readerId)
-
-  // 2. Tìm user theo refId = _id của độc giả
   const user = await api.get(`/users/ref/${readerId}`)
 
   if (user?._id) {
@@ -144,3 +137,44 @@ const confirmDelete = async () => {
 
 onMounted(loadReaders)
 </script>
+<style scoped>
+h3.fw-bold {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #4b4b4b;
+}
+
+h3.fw-bold i {
+  font-size: 24px;
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+button.btn-primary {
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  border: none !important;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  color: white;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 8px rgba(123, 92, 255, 0.28);
+}
+
+button.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(123, 92, 255, 0.35);
+  opacity: 0.95;
+}
+
+button.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(123, 92, 255, 0.25);
+  opacity: 0.9;
+}
+</style>

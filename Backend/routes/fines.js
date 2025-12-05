@@ -9,7 +9,6 @@ const {
 
 const router = express.Router();
 
-// === FINES (PhieuPhat) ===
 router.get("/", getAll);
 router.get("/:id", getById);
 router.post("/", create);

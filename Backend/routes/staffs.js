@@ -9,7 +9,6 @@ const {
 
 const router = express.Router();
 
-// === STAFFS (NhanVien) ===
 router.get("/", getAll);
 router.get("/:id", getById);
 router.post("/", create);

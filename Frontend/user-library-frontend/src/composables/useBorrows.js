@@ -31,11 +31,8 @@ export function useBorrows() {
   const loadFines = async () => {
     try {
       const res = await axios.get('http://localhost:8080/api/fines')
-
-      // Lọc phiếu phạt thuộc những borrowId của người này
       const myFines = res.data.filter((f) => userBorrowIds.value.includes(f.maMuonSach?._id))
 
-      // Tính tổng tiền
       totalFine.value = myFines.reduce((sum, f) => sum + (f.soTien || 0), 0)
     } catch (err) {
       console.error('Lỗi load phiếu phạt:', err)
@@ -64,24 +61,19 @@ export function useBorrows() {
     currentPage.value = 1
   }
 
-  // ====================================
-  // FETCH DATA
-  // ====================================
   const fetchBorrows = async () => {
     try {
       const user = JSON.parse(localStorage.getItem('user'))
       if (!user) return resetBorrows()
 
-      const res = await getBorrowHistory(user.refId) // hoặc user._id tùy cấu trúc
+      const res = await getBorrowHistory(user.refId)
       borrows.value = res.data
 
-      // lưu danh sách borrowId để load fines
       userBorrowIds.value = borrows.value.map((b) => b._id)
 
       computeStats()
       filtered.value = borrows.value
 
-      // load fines mỗi khi fetch borrows
       loadFines()
     } catch (err) {
       console.error('Lỗi tải dữ liệu mượn sách:', err)
@@ -115,9 +107,6 @@ export function useBorrows() {
     stats.value.overdue = borrows.value.filter((b) => b.trangThai === 'tre_han').length
   }
 
-  // ====================================
-  //  FILTER
-  // ====================================
   const applyFilters = () => {
     currentPage.value = 1
 
@@ -138,17 +127,11 @@ export function useBorrows() {
     filtered.value = borrows.value
   }
 
-  // ====================================
-  //  PAGINATION
-  // ====================================
   const paginated = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage
     return filtered.value.slice(start, start + itemsPerPage)
   })
 
-  // ====================================
-  // HELPERS
-  // ====================================
   const formatDate = (date) => {
     if (!date) return '-'
     return new Date(date).toLocaleDateString('vi-VN')

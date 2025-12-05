@@ -42,7 +42,6 @@
         </div>
       </div>
 
-      <!-- BOOK GRID -->
       <div v-if="paginatedBooks.length > 0" class="books-grid">
         <div v-for="book in paginatedBooks" :key="book._id" class="book-card">
           <div class="book-cover">
@@ -107,7 +106,6 @@ onMounted(() => {
 
 const BE_URL = 'http://localhost:8080'
 
-// chuẩn URL hình ảnh
 const getImageUrl = (path) => {
   if (!path) return '/no-image.jpg'
   return `${BE_URL}${path}`

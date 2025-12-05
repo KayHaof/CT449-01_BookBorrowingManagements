@@ -96,18 +96,15 @@ import { ref } from 'vue'
 import { useBookService } from '@/composables/useBooks'
 
 const keyword = ref('')
-
 const { newestBooks, suggestionBooks, searchResults, searchBooks, loadHomeBooks } = useBookService()
 
 const BE_URL = 'http://localhost:8080'
 
-// chuẩn URL hình ảnh
 const getImageUrl = (path) => {
   if (!path) return '/no-image.jpg'
   return `${BE_URL}${path}`
 }
 
-// Load API khi vào trang
 loadHomeBooks()
 </script>
 

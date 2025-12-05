@@ -3,7 +3,6 @@ import api from '@/composables/useApi'
 export default function useStaffs() {
   const getStaffs = () => api.get('/staffs')
 
-  // Tạo nhân viên + user hệ thống
   const createFullStaff = async (data) => {
     const staff = await api.post('/staffs', {
       maNV: data.maNV,

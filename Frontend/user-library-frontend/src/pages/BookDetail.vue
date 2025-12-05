@@ -102,15 +102,12 @@ const {
 } = useBookService()
 
 const user = JSON.parse(localStorage.getItem('user') || '{}')
-
-// =================== HANDLE BORROW ===================
 const handleBorrow = async () => {
   if (!user?.refId) {
     toast.warning('Bạn cần đăng nhập để mượn sách')
     return
   }
 
-  // ❗ RÀNG BUỘC: Hết sách => Không cho mượn
   if (bookDetail.value.soQuyen <= 0) {
     toast.error('Sách này hiện đã hết, không thể mượn!')
     return
@@ -123,7 +120,6 @@ const handleBorrow = async () => {
     return
   }
 
-  // 0. Lấy số sách đang mượn
   const result = await countActiveBorrows(user.refId)
   const currentBorrows = result.data.count
 
@@ -133,10 +129,8 @@ const handleBorrow = async () => {
   }
 
   try {
-    // 1. Ghi phiếu mượn
     await borrowBook(user.refId, bookDetail.value._id)
 
-    // 2. Trừ số lượng sách
     const updatedQty = bookDetail.value.soQuyen - 1
     await updateBookQuantity(bookDetail.value._id, updatedQty)
     bookDetail.value.soQuyen = updatedQty
@@ -147,12 +141,10 @@ const handleBorrow = async () => {
   }
 }
 
-// =================== LOAD DATA ===================
 onMounted(() => {
   getBookById(route.params.id)
 })
 
-// =================== HÌNH ẢNH ===================
 const BE_URL = 'http://localhost:8080'
 const getImageUrl = (path) => (path ? `${BE_URL}${path}` : '/no-image.jpg')
 </script>

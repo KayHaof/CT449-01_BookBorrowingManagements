@@ -1,15 +1,15 @@
 <template>
   <AdminModal :title="editData ? 'Sửa thể loại' : 'Thêm thể loại'" @close="$emit('close')">
-    <form @submit.prevent="save">
+    <form @submit.prevent="save" class="category-form">
       <AdminFormGroup label="Mã thể loại">
-        <input class="form-control" v-model="form.maLoai" required />
+        <input class="form-control styled-input" v-model="form.maLoai" required />
       </AdminFormGroup>
 
       <AdminFormGroup label="Tên thể loại">
-        <input class="form-control" v-model="form.tenLoai" required />
+        <input class="form-control styled-input" v-model="form.tenLoai" required />
       </AdminFormGroup>
 
-      <button class="btn btn-primary w-100 mt-3">Lưu</button>
+      <button class="btn-submit w-100 mt-3">Lưu</button>
     </form>
   </AdminModal>
 </template>
@@ -26,23 +26,18 @@ const emit = defineEmits(['close', 'saved'])
 
 const { createCategory, updateCategory } = useCategories()
 
-// ⚡ Form mặc định
 const defaultForm = {
   maLoai: '',
   tenLoai: '',
 }
 
-// ⚡ Reactive form
 const form = reactive({ ...defaultForm })
 
-// 🔥 Khi mở modal hoặc edit → load dữ liệu hoặc reset form
 watch(
   () => props.editData,
   (v) => {
-    // Reset form mỗi khi mở modal
     Object.assign(form, defaultForm)
 
-    // Nếu sửa → đổ dữ liệu vào form
     if (v) {
       form.maLoai = v.maLoai
       form.tenLoai = v.tenLoai
@@ -68,3 +63,38 @@ const save = async () => {
   }
 }
 </script>
+<style scoped>
+.category-form {
+  padding: 10px 2px;
+}
+
+/* ===== INPUT ===== */
+.styled-input {
+  border: 1.5px solid #c8b6ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: 0.25s;
+}
+
+.styled-input:focus {
+  border-color: #7b5cff;
+  box-shadow: 0 0 6px rgba(123, 92, 255, 0.35);
+}
+
+/* ===== BUTTON LƯU ===== */
+.btn-submit {
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  border: none;
+  padding: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: white;
+  transition: 0.25s;
+}
+
+.btn-submit:hover {
+  opacity: 0.92;
+  box-shadow: 0 4px 14px rgba(123, 92, 255, 0.35);
+}
+</style>

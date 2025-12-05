@@ -71,6 +71,25 @@
             </div>
           </div>
 
+          <div class="mb-3">
+            <label class="form-label">Xác nhận mật khẩu</label>
+            <div class="input-group">
+              <input
+                :type="showPassword ? 'text' : 'password'"
+                class="form-control"
+                v-model="registerData.xacNhanMatKhau"
+                required
+              />
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                @click="showPassword = !showPassword"
+              >
+                <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
           <button type="submit" class="btn btn-register w-100 fw-semibold">
             <span v-if="!isLoading">Đăng ký</span>
             <span v-else>

@@ -50,7 +50,6 @@ const { getBorrows, deleteBorrow } = useBorrows()
 
 const borrows = ref([])
 
-/* Pagination */
 const currentPage = ref(1)
 const itemsPerPage = 5
 
@@ -58,15 +57,12 @@ const changePage = (p) => {
   currentPage.value = p
 }
 
-/* Forms */
 const showForm = ref(false)
 const editing = ref(null)
 
-/* Delete */
 const showConfirm = ref(false)
 const deletingItem = ref(null)
 
-/* Table columns */
 const columns = [
   { key: 'maMuon', label: 'Mã mượn' },
   { key: 'docGia', label: 'Tên độc giả' },
@@ -99,7 +95,7 @@ const openFineForm = (info) => {
   const totalDays = Math.ceil((ngayTra - ngayMuon) / (1000 * 3600 * 24))
   const lateDays = Math.max(0, totalDays - 14)
 
-  const base = 10000 // tiền gốc
+  const base = 10000
   const fineAmount = Math.round(base * (Math.pow(1.05, lateDays) - 1))
 
   const generateFineCode = () => 'PP' + Math.floor(100000 + Math.random() * 900000)
@@ -113,15 +109,11 @@ const openFineForm = (info) => {
     ngayLap: new Date().toISOString().substring(0, 10),
   }
 
-  // đảm bảo không edit mode
   delete fineData.value._id
 
   showFineForm.value = true
 }
 
-/* ===========================
-   LOAD DATA
-=========================== */
 const loadBorrows = async () => {
   const raw = await getBorrows()
 
@@ -135,11 +127,8 @@ const loadBorrows = async () => {
 
       docGia: `${hoLot} ${ten}`.trim(),
       sach: tenSach,
-
       ngayMuonFormat: b.ngayMuon ? new Date(b.ngayMuon).toLocaleDateString('vi-VN') : '—',
-
       ngayTraFormat: b.ngayTra ? new Date(b.ngayTra).toLocaleDateString('vi-VN') : '—',
-
       statusLabel:
         b.trangThai === 'tre_han'
           ? 'Quá hạn'
@@ -152,15 +141,12 @@ const loadBorrows = async () => {
   })
 }
 
-/* Forms */
 const openForm = (row = null) => {
   editing.value = row
   showForm.value = true
 }
 
 const closeForm = () => (showForm.value = false)
-
-/* Delete */
 const askDelete = (row) => {
   deletingItem.value = row
   showConfirm.value = true
@@ -175,3 +161,44 @@ const confirmDelete = async () => {
 
 onMounted(loadBorrows)
 </script>
+<style scoped>
+h3.fw-bold {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #4b4b4b;
+}
+
+h3.fw-bold i {
+  font-size: 24px;
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+button.btn-primary {
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa) !important;
+  border: none !important;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  color: white;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 8px rgba(123, 92, 255, 0.28);
+}
+
+button.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(123, 92, 255, 0.35);
+  opacity: 0.95;
+}
+
+button.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(123, 92, 255, 0.25);
+  opacity: 0.9;
+}
+</style>

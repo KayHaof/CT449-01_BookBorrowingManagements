@@ -79,7 +79,6 @@ const changePage = (p) => {
   currentPage.value = p
 }
 
-/* ========= LOAD DATA ========= */
 const loadFines = async () => {
   const raw = await getFines()
 
@@ -115,7 +114,6 @@ const loadFines = async () => {
   fines.value = mapped
 }
 
-/* ========= FORM ========= */
 const openForm = (row = null) => {
   editing.value = row
   showForm.value = true
@@ -125,7 +123,6 @@ const closeForm = () => {
   showForm.value = false
 }
 
-/* ========= DELETE ========= */
 const askDelete = (row) => {
   deletingItem.value = row
   showConfirm.value = true
@@ -140,3 +137,44 @@ const confirmDelete = async () => {
 
 onMounted(loadFines)
 </script>
+<style scoped>
+h3.fw-bold {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #4b4b4b;
+}
+
+h3.fw-bold i {
+  font-size: 24px;
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+button.btn-primary {
+  background: linear-gradient(135deg, #7b5cff, #5ac8fa) !important;
+  border: none !important;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  color: white;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 8px rgba(123, 92, 255, 0.28);
+}
+
+button.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(123, 92, 255, 0.35);
+  opacity: 0.95;
+}
+
+button.btn-primary:active {
+  transform: translateY(0px);
+  box-shadow: 0 3px 10px rgba(123, 92, 255, 0.25);
+  opacity: 0.9;
+}
+</style>

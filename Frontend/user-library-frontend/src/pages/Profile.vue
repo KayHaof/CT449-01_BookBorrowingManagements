@@ -307,7 +307,6 @@ const editForm = ref({
 
 const editLoading = ref(false)
 
-// --- OPEN/CLOSE FORMS ---
 function openEditProfile() {
   if (showChangePassword.value) showChangePassword.value = false
   showEditProfile.value = true
@@ -337,7 +336,6 @@ function closePasswordForm() {
   passwordSuccess.value = ''
 }
 
-// --- PASSWORD LOGIC ---
 const passwordForm = ref({
   current: '',
   new: '',
@@ -369,7 +367,6 @@ async function handlePasswordChange() {
   }
 }
 
-// --- UPDATE PROFILE ---
 async function handleUpdateProfile() {
   editLoading.value = true
 

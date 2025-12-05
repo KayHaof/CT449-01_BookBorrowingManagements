@@ -45,7 +45,7 @@
 import { ref } from 'vue'
 import api from '../../composables/useApi'
 import { useRouter } from 'vue-router'
-import { toast } from '@/utils/toast' // ⭐ kiểu object: toast.success(), toast.error()
+import { toast } from '@/utils/toast'
 
 const router = useRouter()
 
@@ -71,7 +71,6 @@ const handleLogin = async () => {
       return
     }
 
-    // ❗ Kiểm tra vai trò (Admin / NhanVien)
     if (res.user.vaiTro !== 'Admin' && res.user.vaiTro !== 'NhanVien') {
       toast.warning('Bạn không có quyền truy cập hệ thống quản trị!')
       return
