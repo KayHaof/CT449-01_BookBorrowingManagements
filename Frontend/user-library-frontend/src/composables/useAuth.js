@@ -3,12 +3,12 @@ import { loginUser } from '../services/authService'
 import { createReader } from '../services/readerService'
 import { createUser } from '../services/userService'
 import { useRouter } from 'vue-router'
+import { toast } from '@/utils/toast'
 
 export function useAuth() {
   const router = useRouter()
 
   const isLoading = ref(false)
-  const errorMessage = ref('')
   const showPassword = ref(false)
 
   // -------------------------------
@@ -22,7 +22,6 @@ export function useAuth() {
 
   const handleLogin = async () => {
     isLoading.value = true
-    errorMessage.value = ''
 
     try {
       const res = await loginUser({
@@ -30,12 +29,12 @@ export function useAuth() {
         matKhau: loginData.value.password,
       })
 
-      console.log('res = ', res)
       localStorage.setItem('user', JSON.stringify(res.user))
-
-      router.push('/') // về trang chính
+      toast.success('Đăng nhập thành công!')
+      router.push('/')
     } catch (err) {
-      errorMessage.value = err.message
+      const msg = err.message || 'Đăng nhập thất bại!'
+      toast.error(msg)
     } finally {
       isLoading.value = false
     }
@@ -57,7 +56,6 @@ export function useAuth() {
 
   const handleRegister = async () => {
     isLoading.value = true
-    errorMessage.value = ''
 
     try {
       const maDG = 'DG' + Date.now()
@@ -80,10 +78,11 @@ export function useAuth() {
         refId: reader._id,
       })
 
-      alert('Đăng ký thành công!')
+      toast.success('Đăng ký thành công!')
+
       router.push('/auth/login')
     } catch (err) {
-      errorMessage.value = err.message
+      toast.error('Đăng ký thất bại!')
     } finally {
       isLoading.value = false
     }
@@ -99,7 +98,6 @@ export function useAuth() {
 
     // common
     isLoading,
-    errorMessage,
     showPassword,
   }
 }

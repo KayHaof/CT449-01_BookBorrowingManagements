@@ -8,12 +8,6 @@
           <p class="text-muted">Quản Lý Mượn Sách - Hệ Thống Thư Viện</p>
         </div>
 
-        <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show">
-          <i class="fa-solid fa-circle-exclamation me-2"></i>
-          {{ errorMessage }}
-          <button type="button" class="btn-close" @click="errorMessage = ''"></button>
-        </div>
-
         <form @submit.prevent="handleRegister">
           <div class="row">
             <div class="col-md-6 mb-3">
@@ -99,7 +93,7 @@
 
 <script setup>
 import { useAuth } from '../composables/useAuth'
-const { registerData, showPassword, isLoading, errorMessage, handleRegister } = useAuth()
+const { registerData, showPassword, isLoading, handleRegister } = useAuth()
 </script>
 
 <style scoped src="../assets/css/register.css"></style>

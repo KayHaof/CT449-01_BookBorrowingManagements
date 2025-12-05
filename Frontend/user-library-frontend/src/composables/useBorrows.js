@@ -1,5 +1,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useApiService } from '@/services/apiService'
+import { toast } from '@/utils/toast'
+import { api } from '@/services/apiService'
 import io from 'socket.io-client'
 import axios from 'axios'
 
@@ -24,7 +26,6 @@ export function useBorrows() {
     overdue: 0,
   })
 
-  // ⭐⭐ TIỀN PHẠT ⭐⭐
   const totalFine = ref(0)
 
   const loadFines = async () => {
@@ -41,13 +42,9 @@ export function useBorrows() {
     }
   }
 
-  // ====================================
-  // 🔥 SOCKET REALTIME
-  // ====================================
   const socket = io('http://localhost:8080')
 
   socket.on('borrow_updated', () => {
-    console.log('📡 Realtime borrow update')
     fetchBorrows()
     loadFines()
   })
@@ -56,12 +53,26 @@ export function useBorrows() {
     socket.disconnect()
   })
 
+  const resetBorrows = () => {
+    borrows.value = []
+    filtered.value = []
+    userBorrowIds.value = []
+    stats.value = { waiting: 0, active: 0, returned: 0, overdue: 0 }
+    totalFine.value = 0
+    searchQuery.value = ''
+    selectedStatus.value = ''
+    currentPage.value = 1
+  }
+
   // ====================================
   // FETCH DATA
   // ====================================
   const fetchBorrows = async () => {
     try {
-      const res = await getBorrowHistory()
+      const user = JSON.parse(localStorage.getItem('user'))
+      if (!user) return resetBorrows()
+
+      const res = await getBorrowHistory(user.refId) // hoặc user._id tùy cấu trúc
       borrows.value = res.data
 
       // lưu danh sách borrowId để load fines
@@ -74,6 +85,21 @@ export function useBorrows() {
       loadFines()
     } catch (err) {
       console.error('Lỗi tải dữ liệu mượn sách:', err)
+    }
+  }
+
+  const cancelBorrow = async (borrow) => {
+    try {
+      await api.delete(`/borrows/${borrow._id}`)
+
+      await api.put(`/books/${borrow.maSach._id}`, {
+        soQuyen: borrow.maSach.soQuyen + 1,
+      })
+
+      toast.success('Đã hủy đăng ký mượn và cập nhật số lượng sách!')
+      fetchBorrows()
+    } catch (err) {
+      toast.error('Không thể hủy phiếu mượn.')
     }
   }
 
@@ -150,7 +176,8 @@ export function useBorrows() {
     filtered,
     stats,
     paginated,
-    totalFine, // ⭐ trả ra để BorrowHistory.vue dùng
+    totalFine,
+    resetBorrows,
 
     searchQuery,
     selectedStatus,
@@ -160,6 +187,7 @@ export function useBorrows() {
     fetchBorrows,
     applyFilters,
     resetFilters,
+    cancelBorrow,
 
     getImage,
     formatDate,

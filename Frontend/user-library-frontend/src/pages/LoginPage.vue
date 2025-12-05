@@ -46,12 +46,6 @@
       </form>
 
       <div class="auth-divider"><span>Hoặc</span></div>
-
-      <button class="auth-btn-outline w-100">
-        <i class="fa-brands fa-google me-2"></i>
-        Đăng nhập bằng Google
-      </button>
-
       <p class="auth-footer">
         Chưa có tài khoản?
         <router-link to="/auth/register">Đăng ký ngay</router-link>

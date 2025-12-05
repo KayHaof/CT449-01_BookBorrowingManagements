@@ -99,6 +99,7 @@
                 <th>Ngày mượn</th>
                 <th>Hạn trả</th>
                 <th>Trạng thái</th>
+                <th>Hành động</th>
               </tr>
             </thead>
 
@@ -130,6 +131,15 @@
 
                     {{ statusText(item.trangThai) }}
                   </span>
+                </td>
+                <td class="text-center">
+                  <button
+                    v-if="item.trangThai === 'dang_ky_muon'"
+                    class="btn btn-sm btn-danger"
+                    @click="cancelBorrow(item)"
+                  >
+                    <i class="fa-solid fa-xmark me-1"></i> Hủy
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -173,6 +183,7 @@ const {
   statusText,
   getDueDate,
   totalFine,
+  cancelBorrow,
 } = useBorrows()
 </script>
 
@@ -364,6 +375,11 @@ const {
   color: #212529;
   margin: 0;
   font-size: 0.95rem;
+}
+
+.btn-danger {
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
 }
 
 .status-badge {

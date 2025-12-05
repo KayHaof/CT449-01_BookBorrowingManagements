@@ -19,63 +19,45 @@
 
       <!-- MENU -->
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto align-items-center gap-lg-3">
+        <ul class="navbar-nav ms-auto align-items-center gap-lg-4">
+          <!-- TRANG CHỦ -->
           <li class="nav-item">
             <router-link to="/" class="nav-link">Trang chủ</router-link>
           </li>
 
-          <li class="nav-item">
+          <!-- LỊCH SỬ MƯỢN -->
+          <li class="nav-item" v-if="user">
             <router-link to="/borrow-history" class="nav-link">Lịch sử mượn</router-link>
           </li>
 
-          <!-- USER DROPDOWN -->
-          <li class="nav-item dropdown ms-lg-3">
-            <a
-              class="nav-link user-toggle d-flex align-items-center"
-              href="#"
-              data-bs-toggle="dropdown"
-            >
-              <img v-if="user" :src="userAvatar" class="user-avatar me-2" />
+          <!-- HỒ SƠ CÁ NHÂN -->
+          <li class="nav-item" v-if="user">
+            <router-link to="/profile" class="nav-link">
+              <i class="fa-solid fa-id-card me-1"></i> Hồ sơ cá nhân
+            </router-link>
+          </li>
 
-              <i v-else class="fa-solid fa-circle-user fs-4 me-2"></i>
+          <!-- ĐĂNG XUẤT -->
+          <li class="nav-item" v-if="user">
+            <button class="btn btn-link nav-link logout-btn" @click="handleLogout">
+              <i class="fa-solid fa-right-from-bracket me-1"></i> Đăng xuất
+            </button>
+          </li>
 
-              <span class="fw-semibold">{{ user ? user.tenDangNhap : 'Tài khoản' }}</span>
+          <!-- NẾU CHƯA LOGIN -->
+          <template v-else>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/auth/login">Đăng nhập</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/auth/register">Đăng ký</router-link>
+            </li>
+          </template>
 
-              <i class="fa-solid fa-chevron-down ms-2 small opacity-75"></i>
-            </a>
-
-            <ul class="dropdown-menu dropdown-menu-end shadow">
-              <!-- Nếu chưa đăng nhập -->
-              <template v-if="!user">
-                <li>
-                  <router-link class="dropdown-item" to="/auth/login">
-                    <i class="fa-solid fa-right-to-bracket me-2 text-primary"></i> Đăng nhập
-                  </router-link>
-                </li>
-                <li>
-                  <router-link class="dropdown-item" to="/auth/register">
-                    <i class="fa-solid fa-user-plus me-2 text-success"></i> Đăng ký
-                  </router-link>
-                </li>
-              </template>
-
-              <!-- Nếu đã đăng nhập -->
-              <template v-else>
-                <li>
-                  <router-link class="dropdown-item" to="/profile">
-                    <i class="fa-solid fa-id-card me-2 text-primary"></i> Hồ sơ của tôi
-                  </router-link>
-                </li>
-
-                <li><hr class="dropdown-divider" /></li>
-
-                <li>
-                  <button class="dropdown-item text-danger" @click="handleLogout">
-                    <i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất
-                  </button>
-                </li>
-              </template>
-            </ul>
+          <!-- AVATAR + USERNAME HIỂN THỊ ĐƠN GIẢN -->
+          <li class="nav-item d-flex align-items-center" v-if="user">
+            <img :src="userAvatar" class="user-avatar me-2" />
+            <span class="username-text">{{ user.tenDangNhap }}</span>
           </li>
         </ul>
       </div>
@@ -85,6 +67,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useBorrows } from '@/composables/useBorrows'
+const { resetBorrows } = useBorrows()
 
 const router = useRouter()
 const user = ref(null)
@@ -99,29 +83,30 @@ const userAvatar = computed(
 )
 
 const handleLogout = () => {
-    localStorage.removeItem('user')
-    localStorage.removeItem('accessToken')
-    user.value = null
-    router.push('/auth/login')
+  localStorage.removeItem('user')
+  localStorage.removeItem('accessToken')
+  user.value = null
+  resetBorrows()
+  router.push('/auth/login')
 }
 </script>
 <style scoped>
-/* NAVBAR BACKGROUND */
 .navbar-main {
   background: linear-gradient(135deg, #4b6cb7, #182848);
   padding: 0.8rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-/* BRAND */
 .navbar-brand {
   color: #ffffff !important;
   font-size: 1.35rem;
   letter-spacing: 0.5px;
 }
 
-/* LINKS */
 .nav-link {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
   font-weight: 500;
   transition: 0.25s ease-in-out;
 }
@@ -132,7 +117,15 @@ const handleLogout = () => {
   transform: translateY(-1px);
 }
 
-/* USER AVATAR */
+.logout-btn {
+  color: #ffcccc !important;
+  padding: 0;
+}
+
+.logout-btn:hover {
+  color: #ffffff !important;
+}
+
 .user-avatar {
   width: 34px;
   height: 34px;
@@ -141,34 +134,8 @@ const handleLogout = () => {
   border: 2px solid rgba(255, 255, 255, 0.7);
 }
 
-/* USER DROPDOWN */
-.user-toggle {
-  cursor: pointer;
-  color: white !important;
-}
-
-.dropdown-menu {
-  border-radius: 10px;
-  padding: 0.5rem 0;
-}
-
-.dropdown-item {
-  padding: 0.55rem 1rem;
-  font-size: 0.95rem;
-  transition: background 0.2s;
-}
-
-.dropdown-item:hover {
-  background: #f2f4f7;
-}
-
-.dropdown-item i {
-  width: 18px;
-}
-
-/* TOGGLER */
-.navbar-toggler {
-  outline: none;
-  border: none;
+.username-text {
+  color: white;
+  font-weight: 600;
 }
 </style>
