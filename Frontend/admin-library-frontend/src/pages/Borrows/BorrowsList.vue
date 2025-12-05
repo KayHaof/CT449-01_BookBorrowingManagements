@@ -69,6 +69,8 @@ const deletingItem = ref(null)
 /* Table columns */
 const columns = [
   { key: 'maMuon', label: 'Mã mượn' },
+  { key: 'docGia', label: 'Tên độc giả' },
+  { key: 'sach', label: 'Tên sách' },
   { key: 'ngayMuonFormat', label: 'Ngày mượn' },
   { key: 'ngayTraFormat', label: 'Ngày trả' },
   { key: 'statusLabel', label: 'Trạng thái' },
@@ -79,9 +81,6 @@ const pagedBorrows = computed(() => {
   return borrows.value.slice(start, start + itemsPerPage)
 })
 
-/* ===========================
-   ⭐ FORM PHẠT
-=========================== */
 const showFineForm = ref(false)
 const fineData = ref(null)
 
@@ -100,7 +99,7 @@ const openFineForm = (info) => {
   const totalDays = Math.ceil((ngayTra - ngayMuon) / (1000 * 3600 * 24))
   const lateDays = Math.max(0, totalDays - 14)
 
-  const base = 50000 // tiền gốc
+  const base = 10000 // tiền gốc
   const fineAmount = Math.round(base * (Math.pow(1.05, lateDays) - 1))
 
   const generateFineCode = () => 'PP' + Math.floor(100000 + Math.random() * 900000)
@@ -126,21 +125,31 @@ const openFineForm = (info) => {
 const loadBorrows = async () => {
   const raw = await getBorrows()
 
-  borrows.value = raw.map((b) => ({
-    ...b,
-    ngayMuonFormat: b.ngayMuon ? new Date(b.ngayMuon).toLocaleDateString('vi-VN') : '—',
-    ngayTraFormat: b.ngayTra ? new Date(b.ngayTra).toLocaleDateString('vi-VN') : '—',
+  borrows.value = raw.map((b) => {
+    const hoLot = b.maDocGia?.hoLot || ''
+    const ten = b.maDocGia?.ten || ''
+    const tenSach = b.maSach?.tenSach || ''
 
-    // Hiển thị label, nhưng GIỮ nguyên b.trangThai để dùng cho form sửa
-    statusLabel:
-      b.trangThai === 'tre_han'
-        ? 'Quá hạn'
-        : b.trangThai === 'da_tra'
-          ? 'Đã trả'
-          : b.trangThai === 'dang_muon'
-            ? 'Đang mượn'
-            : 'Đăng ký mượn',
-  }))
+    return {
+      ...b,
+
+      docGia: `${hoLot} ${ten}`.trim(),
+      sach: tenSach,
+
+      ngayMuonFormat: b.ngayMuon ? new Date(b.ngayMuon).toLocaleDateString('vi-VN') : '—',
+
+      ngayTraFormat: b.ngayTra ? new Date(b.ngayTra).toLocaleDateString('vi-VN') : '—',
+
+      statusLabel:
+        b.trangThai === 'tre_han'
+          ? 'Quá hạn'
+          : b.trangThai === 'da_tra'
+            ? 'Đã trả'
+            : b.trangThai === 'dang_muon'
+              ? 'Đang mượn'
+              : 'Đăng ký mượn',
+    }
+  })
 }
 
 /* Forms */

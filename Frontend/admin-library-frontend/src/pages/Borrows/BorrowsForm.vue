@@ -107,7 +107,7 @@ const save = async () => {
 
     // Tạo phiếu phạt nếu trễ hạn
     if (form.trangThai === 'tre_han') {
-      const borrow = updated.borrow // <-- lấy đúng object trả về từ server
+      const borrow = updated // <-- lấy đúng object trả về từ server
 
       emit('create-fine', {
         maMuonSach: borrow._id,

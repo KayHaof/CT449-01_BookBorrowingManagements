@@ -9,10 +9,6 @@
         <input class="form-control" v-model="form.tenNXB" required />
       </AdminFormGroup>
 
-      <AdminFormGroup label="Địa chỉ">
-        <textarea class="form-control" v-model="form.diaChi"></textarea>
-      </AdminFormGroup>
-
       <button class="btn btn-primary w-100 mt-3">Lưu</button>
     </form>
   </AdminModal>
@@ -34,7 +30,6 @@ const { createPublisher, updatePublisher } = usePublishers()
 const defaultForm = {
   maNXB: '',
   tenNXB: '',
-  diaChi: '',
 }
 
 // ⚡ Reactive form
@@ -49,7 +44,6 @@ watch(
     if (v) {
       form.maNXB = v.maNXB
       form.tenNXB = v.tenNXB
-      form.diaChi = v.diaChi
     }
   },
   { immediate: true },

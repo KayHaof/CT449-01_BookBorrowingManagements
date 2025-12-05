@@ -42,6 +42,7 @@ import FinesForm from './FinesForm.vue'
 
 import useFines from '@/composables/useFines'
 import { toast } from '@/utils/toast'
+import api from '@/composables/useApi'
 
 const { getFines, deleteFine } = useFines()
 
@@ -61,6 +62,8 @@ const deletingItem = ref(null)
 
 const columns = [
   { key: 'maPhieuPhat', label: 'Mã phiếu' },
+  { key: 'docGia', label: 'Người mượn' },
+  { key: 'tenSach', label: 'Sách' },
   { key: 'soTien', label: 'Số tiền' },
   { key: 'lyDo', label: 'Lý do' },
   { key: 'ngayLapFormat', label: 'Ngày lập' },
@@ -80,11 +83,36 @@ const changePage = (p) => {
 const loadFines = async () => {
   const raw = await getFines()
 
-  // Format ngày lập
-  fines.value = raw.map((f) => ({
-    ...f,
-    ngayLapFormat: f.ngayLap ? new Date(f.ngayLap).toLocaleDateString('vi-VN') : '—',
-  }))
+  const mapped = await Promise.all(
+    raw.map(async (f) => {
+      let docGia = '—'
+      let tenSach = '—'
+
+      const borrowId = f.maMuonSach?._id
+
+      if (borrowId) {
+        try {
+          const borrowRes = await api.get(`/borrows/${borrowId}`)
+          const borrow = borrowRes
+
+          docGia = borrow?.maDocGia ? `${borrow.maDocGia.hoLot} ${borrow.maDocGia.ten}` : '—'
+
+          tenSach = borrow?.maSach?.tenSach || '—'
+        } catch (err) {
+          console.warn('Không fetch được borrow:', err)
+        }
+      }
+
+      return {
+        ...f,
+        docGia,
+        tenSach,
+        ngayLapFormat: f.ngayLap ? new Date(f.ngayLap).toLocaleDateString('vi-VN') : '—',
+      }
+    }),
+  )
+
+  fines.value = mapped
 }
 
 /* ========= FORM ========= */

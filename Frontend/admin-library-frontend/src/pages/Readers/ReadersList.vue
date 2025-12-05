@@ -54,9 +54,13 @@ import ReadersForm from './ReadersForm.vue'
 import ReaderDetailCard from './ReaderDetailCard.vue'
 
 import useReaders from '@/composables/useReaders'
+import useUsers from '@/composables/useUsers'
+import api from '@/composables/useApi'
+
 import { toast } from '@/utils/toast'
 
 const { getReaders, deleteReader } = useReaders()
+const { deleteUser } = useUsers()
 
 const readers = ref([])
 
@@ -121,8 +125,19 @@ const askDelete = (row) => {
 }
 
 const confirmDelete = async () => {
-  await deleteReader(deletingItem.value._id)
-  toast.success('Xóa độc giả thành công!')
+  const readerId = deletingItem.value._id
+
+  // 1. Xóa độc giả
+  await deleteReader(readerId)
+
+  // 2. Tìm user theo refId = _id của độc giả
+  const user = await api.get(`/users/ref/${readerId}`)
+
+  if (user?._id) {
+    await deleteUser(user._id)
+  }
+
+  toast.success('Xóa độc giả + user liên kết thành công!')
   showConfirm.value = false
   loadReaders()
 }
