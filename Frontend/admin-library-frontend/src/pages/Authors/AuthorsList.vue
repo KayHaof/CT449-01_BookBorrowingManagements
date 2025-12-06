@@ -113,6 +113,8 @@ h3.fw-bold {
 h3.fw-bold i {
   font-size: 24px;
   background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  background-clip: text;
+  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

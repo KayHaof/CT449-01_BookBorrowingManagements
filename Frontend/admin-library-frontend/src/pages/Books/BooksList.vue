@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex justify-content-between mb-3">
-      <h3 class="fw-bold"><i class="fa-solid fa-book text-primary"></i> Quản lý Sách</h3>
+      <h3 class="fw-bold"><i class="fa-solid fa-book-open text-primary"></i> Quản lý Sách</h3>
       <button class="btn btn-primary" @click="openForm()">+ Thêm sách</button>
     </div>
 
@@ -116,10 +116,11 @@ h3.fw-bold {
 h3.fw-bold i {
   font-size: 24px;
   background: linear-gradient(135deg, #7b5cff, #5ac8fa);
+  background-clip: text;
+  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* ===== BUTTON: + Thêm sách ===== */
 button.btn-primary {
   background: linear-gradient(135deg, #7b5cff, #5ac8fa);
   border: none !important;

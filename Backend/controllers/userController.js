@@ -1,4 +1,5 @@
 const User = require("../models/NguoiDung");
+const Staff = require("../models/NhanVien");
 
 const getAll = async (req, res) => {
     try {
@@ -21,9 +22,35 @@ const getById = async (req, res) => {
 
 const create = async (req, res) => {
     try {
-        const user = new User(req.body);
-        await user.save();
-        res.status(201).json(user);
+        let { maND, tenDangNhap, matKhau, vaiTro, refId } = req.body;
+
+        console.log(refId);
+        
+
+        // let refId = null;
+
+        // Nếu là Admin → tạo bản ghi trong NhanVien trước
+        if (vaiTro === "Admin") {
+            const staff = await Staff.create({
+                maNV: maND,
+                hoTenNV: tenDangNhap, // hoặc để tên riêng tùy bạn
+                matKhau: matKhau,
+                chucVu: "Admin",
+            });
+
+            refId = staff._id;
+        }
+
+        // Tạo user
+        const newUser = await User.create({
+            maND,
+            tenDangNhap,
+            matKhau,
+            vaiTro,
+            refId,
+        });
+
+        res.status(201).json(newUser);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }

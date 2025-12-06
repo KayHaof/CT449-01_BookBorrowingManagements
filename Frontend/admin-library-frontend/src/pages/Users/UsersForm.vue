@@ -58,7 +58,7 @@ const form = reactive({
   tenDangNhap: '',
   matKhau: '',
   vaiTro: 'Admin',
-  refId: '',
+  refId: null,
 })
 
 watch(
@@ -69,7 +69,7 @@ watch(
       form.tenDangNhap = v.tenDangNhap
       form.matKhau = v.matKhau
       form.vaiTro = 'Admin'
-      form.refId = ''
+      form.refId = null
     }
   },
 )
